@@ -1,0 +1,92 @@
+*/ HTML */
+h1-h6: tieu de từ to đến nhỏ
+
+p, span: viết nội dung {p: xuống dòng, span: viết liền }
+
+img: ảnh
+
+a: đường liên kết
+
+ul, li: dạng danh sách {ul: dấu chấm, ol: chữ số}
+
+table: thẻ bảng có 
+{
+    <thead>
+        <th></th>
+    </thead>
+    //có bao nhiêu thẻ th thì có tưng đó thẻ td
+    <tbody>
+        <tr>
+            <td></td>
+        </tr>
+    </tbody>
+}
+
+input: 
+- tạo ra các type:
+{
+    text: nhập chữ
+    password: nhập mật khẩu
+    checkbox: chọn nhiều
+    radio: chọn 1
+    submit: nút gửi
+    reset: nút xóa
+    button: nút bấm
+}
+- tạo ra các thuộc tính:
+{
+    name: tên của input
+    value: giá trị của input
+    placeholder: gợi ý nhập dữ liệu
+    checked: mặc định được chọn
+    disabled: không thể thao tác
+}
+
+button: tạo ra các loại nút bấm
+{
+    submit: nút gửi
+    reset: nút xóa
+    button: nút bấm
+}
+
+div: khối phần tử bao quanh kiểu tách từng phần tử
+
+Attributes: các thuộc tính của thẻ HTML
+{
+    id: định danh duy nhất
+    class: nhóm các phần tử cùng kiểu
+    style: định dạng trực tiếp
+    title: gợi ý khi rê chuột vào
+    lang: ngôn ngữ sử dụng
+    dir: hướng văn bản (ltr: trái sang phải, rtl: phải sang trái)
+}
+
+
+/* CSS */
+Có 3 cách kết nối css vs html
+1. Internal
+    - tạo 1 thẻ style trong phần head
+2. External
+    - tạo 1 file css ở ngoài và liên kết link
+3. Inline
+    - kiểu sử dụng Attributes viết ở các thẻ đó
+
+id và class
+id: định danh duy nhất chỉ xuất hiện 1 lần
+class: sử dụng cho nhiều thằng 
+
+* mức độ ưu tiên:
+- Internal,External: không ai có ưu tiên hơn ai, ai được gọi ra sau thì mới hơn thì sẽ được ưu tiên
+- Inline sự ưu tiên(to đến nhỏ):
+    + Inline viết thẳng luôn thuộc tính vô thẻ
+    + id: thêm thuộc tính r css ngoài
+    + class
+    + tag
+- ưu tiên nếu có 2 thuộc tính giống nhau thì thằng gọi sau sẽ được ưu tiên, trường hợp phần tử đó được đưa ra với thuộc tính cao hơn thì cái đó được ưu tiên
+- gọi chung tất cả trong html thì nhưng thằng trên đề đè lên trước nó được vd:html{},body{}
+
+- hover: màu di chuyển chuột vô mới đổi
+- acive: bấm chuột mới đổi
+- first-child: lấy phần tử đầu tiên
+- last-child: lấy phần tử cuối cùng
+
