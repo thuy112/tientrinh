@@ -1,0 +1,54 @@
+/* CSS 
+- làm màu loang là dùng background-image: linear-gradient(độ nghiêng, màu 1, màu 2, ...);
+- làm mất dấu chấm: list-style: none;
+- inline-block: hiển thị theo hàng ngang, nhưng vẫn giữ được các thuộc tính của block (ví dụ: width, height, margin, padding)
+- flex: hiển thị theo hàng ngang, nhưng không giữ được các thuộc tính của block (ví dụ: width, height, margin, padding)
+- {display: flex;
+    justify-content: center; }2 thằng này phải luôn ik chung với nhau
+- text-decoration: none; laoij bỏ gạch chân
+- margin: 0 8px; là khoảng cách trên dưới 0, trái phải 8px
+- solid trong border-left: 1px solid #FB9086; là đường thẳng, còn dashed là đường đứt đoạn
+- transform:
+    + translateY(-50%); là di chuyển theo trục Y, -50% là di chuyển lên trên 50% chiều cao của chính nó
+    + translateX(-50%); là di chuyển theo trục X, -50% là di chuyển sang trái 50% chiều rộng của chính nó
+- cursor: pointer; là con trỏ chuột khi hover vào sẽ thành hình bàn tay
+- height: 100vh; là chiều cao bằng 100% chiều cao của viewport
+- width: 100vw; là chiều rộng bằng 100% chiều rộng của viewport
+- position: fixed; là cố định vị trí, không bị ảnh hưởng bởi scroll
+- position: absolute; là tuyệt đối, bị ảnh hưởng bởi scroll
+-khi tạo 1 class hãy tạo class bé hơn class cha, ví dụ: header__navbar, header__logo, header__menu, header__menu-item, header__menu-link, header__menu-sub, header__menu-sub-item, header__menu-sub-link( gọi là  BEM)
+- margin: 0px auto; là căn giữa theo chiều ngang
+- front-weight: 700; là độ đậm của chữ, 700 là đậm, 400 là bình thường, 100 là mảnh
+- line-height: 20px; là khoảng cách giữa các dòng, 20px là khoảng cách 20px
+- border-radius: 4px; là bo tròn các góc, 4px là bán kính bo tròn 4px
+- box-shadow:
+    + 0 15px 25px #0000001a; là đổ bóng, 0 là độ lệch theo trục X, 15px là độ lệch theo trục Y, 25px là độ mờ, #0000001a là màu
+- padding-inline-start: 0; là khoảng cách bên trái của phần tử, 0
+- padding-top: 10px; là khoảng cách bên trên của phần tử, 10px
+- padding-bottom: 10px; là khoảng cách bên dưới của phần tử, 10px
+- padding: 20px 0px; là khoảng cách bên trên và bên dưới của phần tử, 20px là khoảng cách bên trên, 0px là khoảng cách bên dưới
+- gap: 30px; là khoảng cách giữa các phần tử con,
+padding: 20px 0px; là khoảng cách bên trên và bên dưới của phần tử, 20px là khoảng cách bên trên, 0px là khoảng cách bên dưới( cho khoảng cách di chuột )
+
+-<span>
+span{
+margin: auto;
+border-color: red blue green yellow transparent: là trong suốt;
+}
+<span>
+
+- mũi tên xuống khi di chuột vô
+@keyframes headerNotifyGrowth{
+    from{
+        opacity: 0;
+        transform: scale(0)
+        }
+    to{
+        opacity: 1;
+        transform: scale(1)
+    }
+}
+
+
+HTML
+header__navbar: __ là Bem
