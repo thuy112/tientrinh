@@ -242,7 +242,7 @@ header {
 
 /*phan category*/
 .category {
-    width: 1228px;
+    transform: translateY(70px);
     height: 525px;
     margin: 0 auto;
     position: relative;
@@ -258,7 +258,6 @@ header {
 
 .category-list p {
     font-size: 18px;
-    width: 100px;
     height: 27px;
     color: #5e6282;
     margin: 0 auto 10px;
@@ -371,7 +370,6 @@ header {
 
 /* top */
 .top{
-    width: 1102px;
     height: 617px;
     margin: 0 auto;
     position: relative;
@@ -382,8 +380,723 @@ header {
     align-items: center;
     position: relative;
     z-index: 2;
+    height: 457px;
 }
+.top-anh-dep {
+    height: 457px;
+    background: #fff;
+    border-radius: 24px;
+    overflow: hidden; /* Cắt góc ảnh theo khung */
+    
+    /* Bóng đổ nhẹ làm card nổi lên hẳn */
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.08); 
+}
+
 .top-anh-dep img{
     height: 457px;
     border-radius: 24px;
+}
+.top-anh-chu{
+    height: 130px;
+    background-color: #fff;
+    transform: translateY(-135px);
+    border-radius: 0 0 24 24px;
+    padding: 20px;
+
+}
+.top-anh-chu h1{
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 125%;
+    color: #5e6282;
+    font-family: 'Poppins', sans-serif;
+    display: flex !important;
+}
+.tien {
+    font-weight: 500;      
+    color: #5E6282;        
+    margin-left: auto;     /* Đẩy hẳn giá tiền về sát lề bên phải */
+}
+
+.icon-nav {
+    font-size: 16px;
+    color: #080809; /* Hoặc màu #000 */
+}
+
+.top-anh-chu-1{
+    padding: 40px;
+    transform: translateX(-40px);
+}
+.chu{
+    color: #5e6282;
+    margin-left: 10px;
+}
+
+/* EASY */
+.easy{
+    transform: translateY(180px);
+    width: 1114px;
+    height: 492px;
+}
+.easy.container {
+    display: flex;
+    justify-content: space-between; 
+    align-items: flex-start; /* Căn lề đỉnh top cho 2 bên ngang nhau */
+}
+.easy1 p{
+    color: #5e6282;
+    font-weight: 600;
+    font-size: 18px;
+    height: 27px;
+    font-family: 'Poppins', sans-serif;
+}
+.easy1 h1{
+    font-weight: 700;
+    font-size: 50px;
+    text-transform: capitalize;
+    color: #14183e;
+    height: 130px;
+    width: 511px;
+    font-family: 'Volkhov', Georgia, serif;
+}
+.easy2{
+    transform: translateY(40px);
+}
+.easy21 img{
+    width: 47px;
+    height: 48px;
+}
+.easy21 p{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: #5E6282;
+    height: 20px;
+    width: 161px;
+}
+
+.easy21 h1{
+    font-weight: 400;
+    font-size: 16px;
+    height: 40px;
+    width: 327px;
+    font-family: 'Poppins', sans-serif;
+}
+.easy21 p, 
+.easy21 h1 {
+    width: calc(100% - 62px); /* 47px (ảnh) + 15px (gap) = 62px */
+    margin-left: auto; /* Đẩy chữ sát sang phải ảnh */
+    margin-top: 0;
+    margin-bottom: 4px;
+    transform: translateY(-65px);
+}
+.easy-navbav {
+    width: 370px;
+    flex-shrink: 0; 
+    background-color: #ffffff; 
+    padding: 20px;             
+    border-radius: 20px;       
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); 
+
+}
+.easy-navbav p{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    letter-spacing: 1.5%;
+    color: #080809;
+    padding: 10px 0;
+ }
+.easy-navbav h1{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    letter-spacing: -0.5%;
+    color: #84839a;
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    width: 321px;
+    padding: 5px 0;
+}
+.robbins{
+    transform: translateX(-43px);
+}
+.robbin{
+    transform: translateX(-70px);
+}
+
+.card-icons {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 25px;
+    padding: 10px 0;
+    transform: translateY(15px);
+}
+.icon-circle {
+    width: 36px;
+    height: 36px;
+    background-color: #f5f5f5;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #84839a;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.icon-circle:hover {
+    background-color: #dfd7f9;
+    color: #59b1e6;
+}
+img + .people {
+  margin-left: 10px;
+}
+.heart-btn{
+    margin-left: 151px;
+    color: #4152ca;
+}
+.anhnho{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 129;
+    background-color: #fff;
+    padding: 20px;             
+    border-radius: 20px;       
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); 
+    transform: translate(-144px, 211px);
+}
+.anhnho img{
+    border-radius: 50%;
+    object-fit: cover;
+    transform: translateY(-20px);
+}
+.anhnho-an .anh2{
+    transform: translateY(5px);
+}
+.anhnho-an{
+    transform: translateX(13px);
+}
+.anhnho-an p{
+    height: 17px;
+    font-weight: 500;
+    font-size: 14px;
+    color: #84829a;
+}
+.anhnho-an h1{
+    font-weight: 500;
+    font-size: 18px;
+    height: 22px;
+    color: #080809;
+}
+.anhnho-an h2{
+    height: 17px;
+    font-weight: 500;
+    font-size: 14px;
+    color: #8a79df;
+}
+
+.anhnho-an h1,
+.anhnho-an h2{
+    margin-top: 10px;
+}
+
+/* Khung chứa danh sách hang dàn hàng ngang */
+.hang {
+    transform: translateY(200px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1170px;
+    margin: 60px auto 0 auto; /* Đẩy lề trên ra cách khối easy */
+    clear: both; /* Tránh đè layout */
+}
+
+/* Thẻ bọc từng logo: Tạo kích thước khung nền trắng 241x86 */
+.hang-item {
+    width: 241px;
+    height: 86px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    transition: all 0.3s ease; /* Hiệu ứng hiện mượt mà */
+    cursor: pointer;
+}
+
+.hang-item img {
+    filter: grayscale(100%); /* (Tùy chọn) Làm xám logo mặc định */
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+/* KHI DI CHUỘT VÀO (HOVER) HOẶC CÓ CLASS ACTIVE */
+.hang-item:hover{
+    background-color: #ffffff; /* Hiện nền trắng */
+    box-shadow: 0px 40px 60px rgba(0, 0, 0, 0.06); /* Đổ bóng phía dưới giống Figma */
+}
+
+.hang-item:hover img {
+    filter: grayscale(0%); /* Hiện rõ màu logo gốc */
+    opacity: 1;
+}
+.image27{
+    width: 130px;
+    height: 130px;
+}
+
+/* SUBMIT */
+.submit{
+    transform: translateY(200px);
+    margin: 120px auto 80px auto;
+    position: relative;
+}
+
+/* Icon cộng (+) ở góc dưới bên phải */
+.submit.container > img {
+    position: absolute;
+    right: -25px;
+    bottom: -50px;
+    z-index: -1;
+    transform: translateX(50px);
+}
+
+/* Nút hình tròn máy bay giấy màu tím (Top-Right) */
+.submit1 {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(201.65deg, #747def 10.27%, #5e3be1 100%);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ffffff;
+    font-size: 26px;
+    z-index: 10;
+}
+
+/* Khung phông nền tím nhạt chính */
+.submit-phong {
+    position: relative;
+    background-color: #f9f8fe;
+    border-radius: 129px 20px 20px 20px; /* Bo góc đặc trưng Figma */
+    padding: 80px 0;
+    text-align: center;
+    overflow: hidden; /* Cắt ảnh hoa văn thừa */
+}
+
+/* 2 Ảnh hoa văn vòng tròn làm nền trái & phải */
+.submit-nen {
+    position: absolute;
+    left: -50px;
+    bottom: -80px;
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.submit-nen1 {
+    position: absolute;
+    right: -80px;
+    top: -50px;
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+/* Dòng tiêu đề h1 */
+.submit-phong h1 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 33px;
+    line-height: 54px;
+    color: #5e6282;
+    max-width: 860px;
+    margin: 0 auto 50px auto;
+    position: relative;
+    z-index: 2;
+}
+
+/* Ô nhập liệu Input (Icon + Chữ) */
+.submit2 {
+    display: inline-flex;
+    align-items: center;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 0 20px;
+    width: 420px;
+    height: 68px;
+    margin-right: 24px;
+    position: relative;
+    z-index: 2;
+}
+
+.submit2 .input-icon {
+    font-size: 18px;
+    color: #39425d;
+    margin-right: 14px;
+}
+
+.submit2 input {
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: #39425d;
+}
+
+.submit2 input::placeholder {
+    color: #39425d;
+    opacity: 0.7;
+}
+
+/* Nút Subscribe màu cam */
+.submit3 {
+    width: 180px;
+    height: 68px;
+    background: linear-gradient(180deg, #ff946d 0%, #ff7d68 100%);
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    z-index: 2;
+}
+
+.submit3:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(255, 125, 104, 0.3);
+}
+
+
+/* JADOO */
+.jadoo{
+    transform: translateY(200px);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.jaddo1{
+    height: 133px;
+    transform: translateY(-30px);
+}
+.jaddo1 h1{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 44px;
+    color: #181E4B;
+    margin-bottom: 10px
+}
+.jaddo1 p{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    color: #5E6282;
+}
+.jaddo2{
+    height: 135px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transform: translateX(62px);
+}
+.jadoo2-cuoi{
+    height: 151px;
+}
+.jaddo2-cuoi h1{
+    font-weight: 700;
+    font-size: 21px;
+    height: 26px;
+}
+.jadoo2-cuoi ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.jadoo2-cuoi ul a {
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    color: #5E6282;
+}
+.jaddo3 {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transform: translateX(111px);
+}
+.jaddo3 p{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    color: #5E6282;
+    height: 25px;
+}
+
+/* --- Social Icons --- */
+.social-icons {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.social-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #080809;
+    text-decoration: none;
+    font-size: 16px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.social-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Nút Instagram màu loang gradient chuẩn Figma */
+.social-btn.instagram {
+    background: conic-gradient(from 180deg at 50% 50%, #B8D2F1 0deg, #F289AA 60deg, #C68BF0 106.09deg, #D164DA 153.75deg, #C963E8 221.25deg, #BFC2E8 258.75deg, #FFC999 288.75deg, #D0D8C9 315deg, #BAD0F1 360deg);
+    color: #ffffff;
+    box-shadow: 0px 4px 14px rgba(217, 100, 218, 0.35);
+}
+
+/* --- Title Text --- */
+.discover-text {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    color: #5E6282;
+    margin: 8px 0;
+}
+
+/* --- App Store / Google Play Buttons --- */
+.app-buttons {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.app-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #080809;
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 35px;
+    text-decoration: none;
+    height: 35px;
+}
+
+/* Kích thước Icon Google Play & Apple */
+.play-icon {
+    font-size: 18px;
+    background: linear-gradient(45deg, #4285F4, #34A853, #FBBC05, #EA4335);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.apple-icon {
+    font-size: 20px;
+}
+
+/* Chữ bên trong nút tải app */
+.btn-text {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.btn-text .sub {
+    font-family: 'SF Pro Display', 'Roboto', sans-serif;
+    font-size: 8px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1;
+}
+
+.btn-text .main {
+    font-family: 'SF Pro Display', 'Roboto', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.ket{
+    transform: translateY(300px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: Poppins;
+    font-weight: 500;
+    font-size: 14px;
+    color:#5e6282;
+    justify-content: center;
+}
+
+/* TESTIMO */
+
+.testimo{
+    transform: translateY(250px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1160px;
+    margin: 100px auto;
+    padding: 0 20px;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* --- CỘT BÊN TRÁI: TEXT & DOTS --- */
+.testimo__chu {
+    max-width: 410px;
+    transform: translateY(-100px);
+}
+
+.testimo__chu p {
+    font-size: 18px;
+    font-weight: 600;
+    color: #5E6282;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.testimo__chu h1 {
+    font-family: 'Volkhov', serif;
+    font-weight: 700;
+    font-size: 50px;
+    line-height: 100%;
+    text-transform: capitalize;
+}
+
+.dots-pagination {
+    display: flex;
+    gap: 20px;
+    margin-top: 140px;         
+    transform: translateX(-430px);
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #E5E5E5;
+    cursor: pointer;
+}
+
+.dot.active {
+    background-color: #39425D;
+}
+
+/* --- CỘT BÊN PHẢI: KHỐI CARD --- */
+.testimo__anh {
+    position: relative;
+    width: 504px;
+    height: 320px;
+}
+
+/* Base style chung cho cả 2 Card */
+.testimo__anh-tren,
+.testimo__anh-duoi {
+    position: absolute;
+    width: 504px;
+    padding: 34px;
+    border-radius: 10px;
+}
+
+/* CARD TRÊN: Trắng sáng, nổi lên trên, có hiệu ứng đổ bóng */
+.testimo__anh-tren {
+    top: 0;
+    left: 0;
+    z-index: 2;
+    background-color: #ffffff;
+    box-shadow: 0px 100px 80px rgba(0, 0, 0, 0.02), 0px 38px 25px rgba(0, 0, 0, 0.012);
+}
+
+/* CARD DƯỚI: Đẩy tụt xuống dưới 75px & sang phải 50px */
+.testimo__anh-duoi {
+    top: 75px;
+    left: 50px;
+    z-index: 1;
+    background-color: #FAFAFA;
+    border: 2px solid #F7F7F7;
+}
+
+/* Định dạng các phần tử bên trong Card */
+.avatar {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    object-fit: cover;
+    position: absolute;
+    top: -34px;
+    left: -34px;
+}
+
+.quote-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: #5E6282;
+    line-height: 1.8;
+    margin: 0 0 34px 0;
+}
+
+.author-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1E1D4C;
+    margin: 0;
+}
+
+.author-location {
+    font-size: 14px;
+    font-weight: 500;
+    color: #5E6282;
+    margin: 5px 0 0 0;
+}
+
+/* --- NÚT MŨI TÊN BÊN PHẢI --- */
+.navigation-arrows {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-left: 30px;
+}
+
+.arrow-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #BCB6C6;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.2s ease;
+}
+
+.arrow-btn:hover {
+    color: #39425D;
 }
