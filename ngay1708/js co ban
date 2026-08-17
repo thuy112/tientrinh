@@ -1,0 +1,178 @@
+/*
+1. Khai báo biến
+- var tên biến (chữ đầu tiên phải là chữ cái thường) và dùng dấu ''.
+- alert: là hiện lên cửa sổ thông báo 
+- có dau chấm phẩy thì có thể viết code cùng 1 hàng 
+không có dấu chấm phẩy k chạy đc cùng 1 hàng không viết liền nhau đc, không có vẫn chạy bt nhưng phải để dòng dưới.
+- comments: để nhớ sau này cách comments đúng để giúp nhớ và tiết kiệm tg
+
+2. 1 số hàm built-in
+- alert
+- console: ghi console song thif . sex hien cac ham
+    + dung dc so, chu, va fullnam
+- confirm:  dc dung san la kiem tra vaf hien ow phan alert
+-prompt: hien dong de nhap gi do vo cung hien o phan alert
+- setTimeout: doi tuong truyen vao 1 (function() {
+    alert(')
+}, khoang thoi gian): thoi gian doi dong code do chay, chi hien 1 lan
+- setInterval: khac setTimeout la no chay lien tuc cu 1 thoi gian no hien
+ (function(){
+    console.log('Day la log' + Math.random)
+ }, 1000)
+
+3.Gioi thieu toan tu
+- Toan tu so hoc
+    var a = 1 + 2;
+    console.log(a); +,-,*,/ la toan tu so hoc
+- toan tu gan
+    var fullName = 'Dang Ngoc Son' dau = la toan tu gan
+- Toan tu so sanh
+    var a = 1;
+    var b = 2;
+    if(a>b){
+        alert('Dung)
+    } 
+        + so sanh laf 2 dau <,>,==
+- Toan tu logic
+    + la ve cac toan tu nhieu dk la dung hoac sai
+    var a = 1;
+    var b = 2;
+    
+    if(a > 0 && b > 0){
+        alert('a & b lon hon 0)
+    }
+
+4. Toan tu so hoc
+    - cong +:
+    - tru -:
+    - Nhan *:
+    - Luy thua **:
+    - Chia /:
+    - Chia lay so du %: hien so du cua phep tinh
+    - Tang 1 gia tri so ++: tang len gia tri so vs a=8 a++ tang len 1
+    -Giam 1 gia tri so --:
+
+5. Toan tu ++ --
+    - Prefix: tien to truoc toan tu
+    - Postfix: hau to sau toan tu
+    var a = 6;
+    a++: hau to
+    ++ a: tien to
+    tien to
+    khac nhau o dong thuc thi la console.log(a): deu la tang len hoac gian ik 1 don vi
+    //viec 1: + 1 cho a, a = a + 1 => a = 7
+    //viec 2: tra ve a sau khi duoc + 1
+    console.log(++a); 
+    hau to  tra ve ca a copy va ket qua
+    a--, a++: viec 1 copy a ra, viec 2 tru 1 cua a: a = a-1 =>a=5, viec 3 tra ve a copy
+6. Toan tu gan
+
+toan tu             vi du               tuong duong
+=                   x=y                 x=y
++=                  x+=y                x= x+y
+-=                  x-=y                x=x-y
+*=                  x*=y                x=x*y
+/=                  x/=y                x=x/y
+**=                 x**=y               x=x**y
+vd: var a=1;
+a = a+2 tuong tu a+=2
+console.log(a); tra ve
+
+7. toan tu chuoi - string operator
+phep + maf toan tu trc sau cua no la chu thi se noi 2 cai, con chi co 1 cai la so thoi thi se noi, con 2 cai la so se cong
+    var firstName = 'Son';
+    var lastName = 'Dang';
+    console.log(firstName + lastName)
+    muon co dau cach 2 cai name thi them + ' '+
+
+    var name = 'Son';
+    name = nam + ' Dang'
+    console.log(name);
+
+8. Toan tu so sanh
+== : Bang chi ss valiu; != :khong bang; chi quan tam valiu > lon hon, <= nho hon hoac bang
+dung if(a>b){
+    console.log('dk dung);
+}else{
+    console.log('dk sai)    
+} neu la so thi tinh  thif nhu bt con neu la chu thi neu thay doi 1 chu se sai
+- hoc khi biet 
+    + ===: var a=1;var b='1'; console.log(a===b); ss ca valiu va data tity
+    + !==: console.log(a !==b): ss tuyet doi ca 2
+
+8. Boolean
+the hien dung hay sai, luon tra ve dung hoac sai
+    var isSuccess = true;
+    console.log(isSuccess);
+    vd:
+        var a = 1;
+        var b = 2;
+        var isSuccess = a>b;
+
+9. If-else(neu-thi)
+    if(dk: luon chuyen doi sang kieu boolean) {
+        code trong nay dc thuc thi neu dk dung hoac sai(tra kq)
+    }else{
+        code(tra kq)
+    }
+neu la chu thi tra ve dk tra ve boolean laf dung thif no se tra ve dung
+// cos 6 gia tri false: 0, false, ''_"", undefined, NaN, null
+neu'0' thi lai dung
+
+10.toan tu logic
+- && - and: nhuwng toan tu  phai deu dung ms chay trong if
+    var a=1, b=2, c=3;
+    if(a<0 && b>0){
+        console.log('dk dung')
+    }
+- || - or: chi can 1 ve dung la da chay trong if
+- ! - Not: phu dinh lai gia tri kieu hieu nguoc lai
+    if(!(a>0)){
+    }
+- hieu sau hon
+    +&&: var result = a<b && a<0; toan tu result se doc tu trai sang phai va lay luon toan tu cuoi cung va neu no cos 1 (.) 6 gtri false thif nos lay luon no lm gtri.
+    console.log(result);
+    +||: var result = 'a'||'b' Lay luon phan tu dau tien va neu phan tu dau tien la 1 (.) 6 ptu false thi se lay ptu tiep theo
+    (se kiem tra dc nguoi dung nhap chua)
+
+11. kieu du lieu trong js
+- Du lieu nguyen thuy - primitive Data: ra de luu vao 1 vung nho va k sua gia tri do
+    + Number: var a = 1 kieu so
+    + String: var fullName = 'Son Dang' kieu chuoi la de trong nhay don hoac kep, neu them 1 nhay don trong 1 nhay don r thif them dau \, neu co dau khac nhau va viet duoc
+    + Boolean: luu gia tri dung hay sai var isSuccess = true; k leen bo dau ngoacj kep don vo
+    + Undefined: dinh nghiax ra bien nhung k gan gia tri cho no var age;
+    + Null: var isNull = null la khong co gi
+    + Symbol: var id = symbol('id');//duy nhat
+- du lieu phuc tap - Complex Data: dang du lieu ham luu vao vung nho co the thuc thi
+    + Function: var myFunction = function(){ tu dinh nghia
+        alert('Hi. xin chao')
+    }
+    myFunction(); goi ra
+    + Object: var myObject = { dung luu hau het tat ca du lieu , mo ngoac nhon
+        name: 'son dang', giua ki va valiu cach nhau bang dau ,
+    };
+            var myArray =[] mo ngoac vuong, khong can dinh nghia ki(danh tu dong tang dan)
+
+12. chuoi trong js
+- tao chuoi
+    + cach tao chuoi: co 2 cach var fullName = 'son dang', var fullName = new String('Son dang'); khoi tao 1 doi tuong
+    + nen dung cah nao? ly do?: 
+    + kiem tra data type:
+- 1 so case su dung backslash (\): khi co 2 nhay don hoac 2 nhay kep cung 1 kieu ma muon dua 1 chu vao nhay kep hoac don
+- xem so dai chuoi: console.log(fullName.length: do dai chuoi)
+- chu y do dai khi viet code: noi chuoi bang dau + va nho cho vao dau ngoac kep
+- Template string ES6: var firstName = 'Son'; var lastName = 'Dang'; console.log(`Toi la: ${firstName} ${lastName}`); su dung dau huyen va dola 
+- length: đo độ dai cua 1 chuỗi
+- Find index: tìm đươc vị trí ký tự cua 1 chuỗi (myString.indexOf()) tra ve chuoi vi tri dau tien vd:'hoc js tai js js f8', neu tim vi tri tiep theo (myString.indexOf('js',6)), neu muon tim js cuoi cung (myString.lastIndexOf('js')), khong tim dc tra ve -1.
+    + search: tim kiem giong indexOf nhuwng khac cai no k ho tro phuong thuc so 2, tim kiem theo bieu thuc chinh quy
+- Cut string: cat chuoi (myString.slice(star,end)) cat tu trai sang phai, tu phai sang trai(-3, -1)
+- replace: ghi de vd: console.log(myString.replace('js','java')), neu nhieu thi sd phuong thuc chinh quy(/js/g, 'java')
+- convert to upper case: chuyen doi chuoi tat ca thanh chu hoa(myString.toUpperCase)
+- convert to lower case: chuyen doi chuoi cua chung ta thanh chu thuong(myString.toLowerCase)
+- trim: bo khoang trang thua o 2 dau (myString.trim())
+- split: cat 1 cai chuoi thanh 1 oray vd: var languages = 'javs, php, rupy'; console.log(languages.split(', ')) tim ra diem cat hop ly, neu cat moi chu cai 1 phan tu('')
+-get a character by index: lay duoc 1 ky tu
+    const myString2 = 'son dang';
+    console.log(//typeof myString2.charAt(10)) tra ve rong neu k co 
+    + console.log(myString2[3]) 
+*/
