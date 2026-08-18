@@ -213,7 +213,7 @@ if (nhapTen === null) {
 */
 
 /* Bài 8 */
-
+/*
 // Nhận email từ người dùng
 var email = prompt("Nhập vào email của bạn:");
 
@@ -225,6 +225,147 @@ if (email === null || email.trim() === "") {
     // Tìm vị trí của ký tự '@'
     var viTriA = emailSach.indexOf("@");
 
-    // Tách email thành 2 phần
-    
+    // Tách email thành 2 phần: người dùng và tên miền
+    if(viTriA === -1 || viTriA === 0 || viTriA === emailSach.length -1){
+        // Không có @ nằm đầu, giữa hoăc chuỗi không chứa @ thì không hợp lệ
+        console.log("Email không hợp lệ.");
+    } else {
+        var tenNguoiDung = emailSach.slice(0, viTriA);
+        var tenMien = emailSach.slice(viTriA);
+
+        var doDaiTen = tenNguoiDung.length;
+
+        // Nếu phần tên có 2 ký tự trở xuống -> Giữ nguyên, không che
+        if (doDaiTen <= 2) {
+            console.log("Email sau khi che: " + emailSach);
+        } else {
+            // Lấy 2 ký tự đầu
+            var haiKyTuDau = tenNguoiDung.slice(0, 2);
+            
+            // Số lượng dấu * cần tạo = độ dài tên - 2
+            var soDauSaoCanTao = doDaiTen - 2;
+
+            // Tạo chuỗi dấu sao tương ứng (không dùng repeat)
+            // Cắt chuỗi dấu * có sẵn đúng bằng số lượng cần che
+            var dauSaoMau = "*****";
+            var dauSaoDaChe = dauSaoMau.slice(0, soDauSaoCanTao);
+
+            var emailChe = haiKyTuDau + dauSaoDaChe + tenMien;
+            console.log("Email sau khi che: " + emailChe);
+        }
+    }
 }
+*/
+
+/* Bài 9*/
+/*
+// Nhận mật khẩu từ người dùng
+var matKhau = prompt('Nhập mật khẩu kiểm tra')
+
+if ( matKhau === null) {
+    console.log('Chưa nhập mật khẩu')
+}else{
+    //Khởi tạo biến đếm tổng điểm
+    var tongDiem =  0;
+
+    //Tiêu chí 1: dài từ 8 ký tự trở lên
+    var tieuChi1 = matKhau.length >=8;
+    if(tieuChi1){
+        tongDiem = tongDiem + 1;
+        console.log('Tiêu chí 1 độ dài từ 8 trở lên "đạt"')
+    }else{
+        console.log('Tiêu chí 1 độ dài dưới 8 "Không đạt')
+    }
+
+    //Tiêu chí 2: có ít nhất một chữ hoa
+    var tieuChi2 = matKhau.toLowerCase() !== matKhau;
+    if(tieuChi2){
+        tongDiem = tongDiem + 1;
+        console.log('Tiêu chí 2 có ít nhất một chữ hoa "đạt"')
+    }else{
+        console.log('Tiêu chí 2 có ít nhất một chữ hoa "Không đạt')
+    }
+
+    //Tiêu chí 3: có ít nhất 1 chữ thường
+    var tieuChi3 = matKhau.toUpperCase() !== matKhau;
+    if(tieuChi3){
+        tongDiem = tongDiem + 1;
+        console.log('Tiêu chí 3 có ít nhất một chữ thường "đạt"')
+    }else{
+        console.log('Tiêu chí 3 có ít nhất một chữ thường "Không đạt')
+    }
+
+    //Tiêu chí 4: không chưa dấu cách
+    var tieuChi4 = !matKhau.includes(" ");
+    if (tieuChi4) {
+        tongDiem = tongDiem + 1;
+        console.log("✔ Tiêu chí 4: Không chứa dấu cách (Đạt)");
+    } else {
+        console.log("✘ Tiêu chí 4: Không chứa dấu cách (Không đạt)");
+    }
+
+    //In tổng điểm
+    console.log("---");
+    console.log("Tổng điểm: " + tongDiem + "/4");
+
+    // Đánh giá độ mạnh/yếu của mật khẩu
+    if (tongDiem === 4) {
+        console.log("Đánh giá: Mật khẩu Mạnh");
+    } else if (tongDiem === 3) {
+        console.log("Đánh giá: Mật khẩu Trung bình");
+    } else {
+        console.log("Đánh giá: Mật khẩu Yếu");
+    }
+}
+*/
+
+/* Bài 10*/
+/*
+// Nhập số kWh từ người dùng
+var nhapKwh = prompt("Nhập số kWh điện tiêu thụ:");
+
+// Ép kiểu dữ liệu sang kiểu Số
+var kwh = Number(nhapKwh);
+
+// Từ chối đầu vào âm, rỗng, hoặc không phải số
+if (nhapKwh === null || nhapKwh.trim() === "" || isNaN(kwh) || kwh < 0) {
+    console.log("Dữ liệu không hợp lệ! Vui lòng nhập số kWh là số không âm.");
+} else {
+    var tienTruocThue = 0;
+
+    // Tính tiền điện trước thuế theo các bậc
+    if (kwh <= 50) {
+        tienTruocThue = kwh * 1806;
+    } else if (kwh <= 100) {
+        tienTruocThue = (50 * 1806) + ((kwh - 50) * 1866);
+    } else if (kwh <= 200) {
+        tienTruocThue = (50 * 1806) + (50 * 1866) + ((kwh - 100) * 2167);
+    } else if (kwh <= 300) {
+        tienTruocThue = (50 * 1806) + (50 * 1866) + (100 * 2167) + ((kwh - 200) * 2729);
+    } else if (kwh <= 400) {
+        tienTruocThue = (50 * 1806) + (50 * 1866) + (100 * 2167) + (100 * 2729) + ((kwh - 300) * 3050);
+    } else {
+        tienTruocThue = (50 * 1806) + (50 * 1866) + (100 * 2167) + (100 * 2729) + (100 * 3050) + ((kwh - 400) * 3151);
+    }
+
+    // Tính thuế VAT 8%
+    var thueVat = tienTruocThue * 0.08;
+
+    // Tổng phải trả (làm tròn về số nguyên bằng parseInt + 0.5)
+    var tongPhaiTra = parseInt(tienTruocThue + thueVat + 0.5);
+
+    // Tính giá trung bình mỗi kWh
+    var giaTrungBinh = 0;
+    if (kwh > 0) {
+        var giaTho = tongPhaiTra / kwh;
+        // Làm tròn 2 chữ số thập phân bằng mẹo toán tử số học
+        giaTrungBinh = parseInt(giaTho * 100 + 0.5) / 100;
+    }
+
+    // In kết quả ra Console
+    console.log("Tiền điện trước thuế: " + tienTruocThue + " VNĐ");
+    console.log("Thuế VAT (8%): " + thueVat + " VNĐ");
+    console.log("Tổng phải trả: " + tongPhaiTra + " VNĐ");
+    console.log("Giá trung bình mỗi kWh: " + giaTrungBinh + " VNĐ/kWh");
+}
+*/

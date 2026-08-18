@@ -176,3 +176,4 @@ neu'0' thi lai dung
     console.log(//typeof myString2.charAt(10)) tra ve rong neu k co 
     + console.log(myString2[3]) 
 */
+
