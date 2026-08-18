@@ -1,0 +1,328 @@
+/*
+//mảng
+vd: var language = 'js'
+    var language2 = 'cs'
+    var language3 = 'php'
+1.tạo mảng [] là 1 mảng
+    var language = [
+        'js',1 phần tử của mảng
+        'js',1 phần tử của mảng
+        'js',1 phần tử của mảng
+    ]
+    lưu ý [] luôn đánh tăng tự động
+    var language = new Array() khi dung chữ array thì k cần []
+    (không khuyến cáo mất thời gian)
+    kiểm tra language có phải array khong console.log(Array.iArray([])
+2.truy xuất mảng
+    độ dài mảng: console.log(language.length)
+    lấy phần tu theo index, key: console.log(language[số phtu])
+
+//làm việc vs Array
+    to string: chuyển lang sang string 
+    join: biến từ array thành 1 chuỗi, chuyền về rỗng thì là ngăn cách các mảng
+    pop: xoá ik phần tử cuối mảng và trả về ptu đã xoá
+    push: thêm phtur vào cuối mảng có thể thêm 1 hoặc nhiều ptu
+    shift: xoá ik phần tử đầu mảng
+    unshift: thêm 1 hoặc nhiều ptu ở đầu mảng và trả về chuỗi ptuwr mới
+    splicing: xoá, cắt, chèn phtu mới vào mảng: xoá languages.splice(số đb, số muốn xoá), chèn languages.splice(số đb, số muốn xoá,'cần chèn')
+    concat: hợp nhất 2 cái array console.log(languages.concat(languages))
+    slicing: cắt 1 vài ptu console.log(languages.slice(số đb, số muón cắt)
+//tham số writeLog();.log(arguments)
+    vòng for param of arguments 
+//polyfill: 
+// object trong javasript
+ var emailKeyyeKliam = 'email';
+var myInfo = {
+    name: 'Son Dang',
+    age: 18,
+    address: 'Ha Noi, vn',
+    emailKey: 'thuy@gamil.com',
+    getName: function(){
+        return this.name;
+    }
+};
+myInfo.email = 'sondang@gmail.com' thêm vô còn nếu có dấu - giữa thì dùng['ghi ra']
+lấy valiu ra ngoài (myInfo. gì đó) cách 2 cũng thế nhưng sd ['gì đó']
+xoá đi 1 valiu delete myInfo.gì đó
+gọi key cho đúng function: phuong thức/method
+                    others: thuôcj tính
+
+// xây dựng ngôi nhà (object constructor)
+fuction User(firstName, llastName, avatar){
+    this.firstName = firstName;
+    this.lastName = lastNmae;
+    this.avatar = avatar;
+}
+
+var author = new User('Sơn', 'đặng', 'avatar');
+var user = new User('vũ', ' hiếu', 'avatar')
+
+//thêm được phương thức thuộc tính qua prototype
+//date trả 1 về thứ ngày tháng nếu gọi thẳng nó
+var data = Data();
+console.log(data); đơn giản thuần
+
+var year = data.getFullYear();
+var moth = date.getMonth() + 1;
+var day = date.getData();
+console.log(`${day}/${month}/${year}`); lấy ra thứ ngày tháng
+
+
+//toán tử 3 ngôi
+var course = {
+    name: ' js',
+    coin: 250
+}
+
+if(course.coin > 0){
+    console.log(`${course.coin} Coins`);
+}else{
+    console.log("mien phí");
+}
+
+//3 ngôi
+var result = courese.coin > 0 ? `${course.coin} Coins` : 'miễn phí';
+console.log(result)
+
+//vòng lặp
+for: lặp lại với đk đúng
+    for (var i = 1; i <= 1000; i++){
+        console.log(i);
+    }
+    lấy ra var arrayLength = myArray.length;
+for/in: lặp qua key của đối tượng
+    var myInfo = {
+        name: 'thuy',
+        age: 18,
+        adderess: 'ha noi'
+    }
+
+    for (var key in myInfo){
+        console.log(key);
+    } lấy cả (myInfo[key]);
+for/of: lặp qua value của đói tuong
+    var myInfo = {
+        name: 'thuy',
+        age: 18,
+        adderess: 'ha noi'
+    }
+    for (var value in myInfo){
+        console.log(value);
+        tra về mảng for(var value of Object.keys(myInfo))
+    }
+while:  lặp khi đk đúng
+    var i =1 ;
+    while (i<=100){
+        console.log(i)
+        i++
+    }
+do/while: lặp ít nhất 1 lần, sau đó lặp khi đk đúng
+
+//vòng lặp break: thoat vong lap
+và continue: bo qua 1 vai vong lap
+    if(%2 !== 0){
+        contine; loaij bor so ler
+    }
+
+//vongf lapj loongf nhau
+var myArray = [
+    [1,2],
+    [3,4],
+    [5,6]
+];
+
+for (var i=0; i<myArray.length; i++){
+    for(var j = 0; j< myArray[i].length; j++];
+        console.log(myArray[i][j]);
+}
+
+mowr rong
+for (var i=100;i>0;i--){
+    console.log(i)
+}
+for (var i=0;i<=100;i +=5)
+
+//bieens luwu chuw
+var totalCoin = 0;
+
+//lap lai cac phan tu
+for(var course of courses){
+    //thuc hien viec luu tru 
+    totalCoin += course.coin;
+}
+console.log(totalCoin);
+
+gioongs nhuwng ngawn gon hon
+function coinHandler(accumulator, currentValue, currentIndex, originArray){
+    i++;
+
+    console.table({
+        'luot chay:':i,
+        'bien tich chu:':accumulator
+    });
+    console.log(currentValue);
+
+    return 100;
+}
+var totalCoin = courses.reduce(coinHandler, 0);
+
+bt: 
+1.var depthArray = [1, 2,[3,4],5,6,[7,8,9]];
+var flatArray = depthArray.reduce(function(flatOutput, depthItem){
+    return flatOutput.concat(depthItem);
+},[]);
+console.log(flatArray);
+
+2. laays tuwf khoa hoc dua vao 1mang ms
+var topics = [
+    {   
+        topic: "Front-end",
+        courses: [
+            {
+                id: 1,
+                title: "html,css"
+            },
+            {
+                id: 2,
+                title: "js"
+            }
+        ]
+    },
+    {   
+        topic: "Back-end",
+        courses: [
+            {
+                id: 1,
+                title: "php"
+            },
+            {
+                id: 2,
+                title: "nodejs"
+            }
+        ]
+    },
+];
+var newCourses = topics.reduce(function (courses, topic){
+    return courses.concat(topic.courses);
+}, []);
+
+console.log(newCourses);
+
+var htmls = newCourses.map(function(course){
+    return `
+        <div>
+            <h2>${course.title}</h2>
+            <p>ID: ${course.id}</p>
+        </div>
+    `;
+});
+
+console.log(html.join(''));
+
+//Callback: laf hamf, truyeenf doois soos, dduowcj goij laij (trong hamf nhaanj doois soos)
+
+
+//forEach, find, filter: tra ve tat ca dk dung, some, every, reduce
+var courses = [
+    'Javascript',
+    'PHP'
+];
+varrav courses = new Array(10,12);
+
+courses.length = 10;
+
+for (var i=0; i<courses.length;++i){
+    console.log(courses[i));
+}
+
+tg tu hop ly hon
+for (var index in courses){
+    console.log(courses[index]);
+}
+
+//forEach: khoong chir nhaanj 1 ddois soos + callbackfn: 
+
+//đệ quy: là 1 hàm nó gọi chính nó
+var array = ['a','b','c','a','b','c'];
+
+
+//xác định đc điểm dừng, logic handle=>tạo ra điểm dừng
+function deQuy(num){
+    if(num < 0){
+        return;
+    }
+    deQuy();
+}
+deQuy(10);
+
+vd:
+function countDown(num){
+    if(num > 0){
+        console.log(num);
+        return countDown(num - 1);
+    }
+    return num;
+}
+countDown(3);
+
+//Dom cos 3 thanhf phan: 1.Element; 2.Attribute; 3.Text
+mooix ddieemr goof leen laf thang node
+1.Element: ID, class, tag, css selector, html collection
+var headingNode = document.getElementBuId('heading')
+console.log({
+    element: headingNode
+});
+2.Attribute: là từ trong <>
+    thêm atti vào elemen: headingElement.title = 'heading', từ class pahir dùng className, 
+                        headingElement.setAttribute('class','heading')
+    lấy ra giá trị: console.log(headingElement.getAttribute('class'));
+3.Text: đoạn chữ thể hiện
+- innerText, textContent
+var headingElement = 
+    document.querySelector('.heading);
+
+console.log(headingElement.innerText): lấy ra element
+console.log(headingElement.textContent): lấy ra element
+
+sửa đổi headingElement.innerText = 'New heading'
+sửa đổi headingElement.textContent = 'New heading'
+
+geter: là lấy ra
+seter: thay đổi nội dung của 1 đối tượng
+
+innerText: khi sd lấy ra giá trị là nd lấy đc là nd nhìn trên trình duyệt(thuộc tính nằm trong elemen)
+textContent: trả về nội dung thật cuar nó trong code không ảnh hưởng đéne việc ẩn hay k, trả về cả các mã code có
+// Javascript: Browser | Server (NodeJS)
+//Application programming interface
+// Brower: HTML -> DOM -> WEB API
+
+document: ddaij dienj cho toan bo wed 
+document.write(''); ghi vao sau
+
+//ôn về element trong DOM
+1. getElementById: trả về trực tiếp elemen
+2. getElementsByClassName: trả về 
+3. getElementsByTagName: 
+4. querySelector: trả về trực tiếp elemen
+5. querýelectorAll: trả về 1 lốt lits
+
+6. HTML collection
+
+7. document.write
+
+//thêm 1  Element trong 1 element có sẵn
+var boxElement = document.querySelector('.box');
+boxElement.innerHTML = '<h1>Heading</h1>';
+console.log(document.querySelector('h1').innerText;
+innerHTML: lăn chuột đén đâu la tai nd đến đó
+outerHTML: 
+đếm phần tử con: childElementCount
+text: là khoảng trắng
+
+//node properties: HTML DOM
+attributes: 1 thuộc tính cuả element
+contenteditable=""
+/*52->*/
+
+
+
