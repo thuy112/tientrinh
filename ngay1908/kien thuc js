@@ -1,0 +1,12 @@
+// ClassList property
+- add: them  class vaf elemen
+- contains: kiem tra 1 class co nam trong elemen khong
+- remove: xoa bor 1 class khoi elemen
+- toggle: neu co 1 class o elemen thi se xoa bo class do con neu k co ma goij thi se them vo
+
+setInterval(() => { 
+    boxElement.classList.toggle('red'); trong truong hop nay la kieu nhay dong mo tap
+}, 1000);
+
+// Input / select: 
+// Key up / down :
