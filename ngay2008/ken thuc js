@@ -1,0 +1,171 @@
+//1.json: là 1 định dạng dữ liệu (chuỗi), giúp thể diện kiểu dữ liệu: number, boolean, string, null, array, object biến ngược lại đc
+    // chuyển đổi và trả lại: stringify: từ js sang json/ parse: tù json sang js
+    //vd:
+    var json = 'true'; //dạng chuỗi kiểu dữ liệu 3 dạng đầu
+    var json = '["js","php"]'// array
+    var json = '{"name":"sơn dang"}' // object
+    // dổi json sang js
+    console.log(JSON.stringify(true)); // đổi sang thêm typeof trc JSON
+//2.Promise: sinh ra để giải quyết 
+    // đồng bộ(sync): thằng nào viết trc chạy trc thành nào viết sau chạy sau
+    // Async: bất đồng bộ: là rõ dành nó phải ik trc nhưng nó lại in ra sau. XMLHttpRequest: đọc file trong reading
+    // callback: để sử lý bất đồng bộ:
+        //nỗi đau: callback hell:
+                 //pyramid of doom:
+                 //vd:
+                 setTimeout(function(){
+                    console.log(1);
+                    setTimeout(function(){
+                        console.log(2);
+                        setTimeout(function(){
+                            console.log(3);
+                        },1000);
+                    },1000);
+                 },1000);
+    //lý thuyết, cách hoạt động
+    var promise = new Promise(
+        //executor
+        function(resolve/*Thành công*/, reject/* thất bại */){
+            
+            resolve([
+                {
+                    id: 1,
+                    name: 'js'
+                }
+            ]);
+        }
+    );
+    promise //là 1 khái niệm sinh ra để sử lý bất đồng bộ, trước khi có promise thì thường sd callback thường xảy ra vấn đề callback hell nó khó nhìn khó hiểu
+        .then(function(courses){//hứa song sau đó
+            console.log('successully');
+        })
+        .catch(function(error){//bây bắt, từ chối, bắt đc lỗi
+            console.log('failue');
+        })
+        .finally(function(){//khi song
+            console.log('done');
+        })
+
+    // tính chất chuỗi:
+        var promise = new Promise(
+            function(resolve, reject){
+                resolve();
+            }
+        );
+        promise
+            .then(function(){
+                return 1;// nếu này k return j thì sẽ ra undefined
+            })
+            .then(function(data){
+                console.log(data);
+                return 2;
+            })
+            .then(function(data){
+                console.log(data);
+                return 3;
+            })
+
+        function sleep(ms) {
+            return new Promise(function(resole){
+                setTimeout(resolve, ms);
+            });
+        }
+        sleep(1000)
+            .then(function(){
+                console.log(1);
+                return sleep(1000);
+            })
+            .then(function(){
+                console.log(2);
+                return sleep(1000);
+            })
+            .then(function(){
+                console.log(3);
+                return sleep(1000);
+            });
+
+//var/ let, const: scope, Hosting
+//const / var,let: assignment
+
+//tagged template literals
+function highlight([first, ...strings], ...values) {
+    return values.reduce(
+        (acc, curr) => [...acc, `<span>${course}</span>, strings.shift()`],
+        [first]
+    )
+    .join('');
+    
+}
+
+var brand = 'F8';
+var course = 'Java';
+
+ const html = highlight` Học lập trinhg ${course} tại ${brand}!`;
+
+ console.log(html);
+
+ //Modules: Import / Export
+// Optional chaining(?.): sd không chắc chắn nó có tồn tại hay k ( nghi ngờ hay them sau nó)
+
+
+//3.fetch: sd lấy đc phía back-end trở về
+    //API(URL) -> lập trình ứng dụng(cổng giao tiếp giữa các phần mềm
+    //Back-end -> API -> Fetchs -> JSON/XML
+    //-> JSON.parse -> js types
+    //-> Render ra giao diện với HTML
+var postApi = 'https://jsonplaceholder.typicode.com/todos/1'
+
+fetch(postApi)
+    .then(function(response){
+        return response.json();
+
+    })
+    .then(function(posts){
+        var htmls = posts.map(function(posts){
+            return `<li>
+                <h2>${post.title}</h2>
+                <p>${post.body}</p>
+            </li>`
+        });
+        var html = htmls.join('');
+        document.getElementById('post-block').innerHTML = html;
+    })
+    .catch(function(er){
+        alert('Có lỗi');
+    })
+    //JSON server: API Server (fake) /
+    //CRUD
+        //-create: tạo mới -> post
+        //-read: lấy dữ liệu -> get
+        //-UPdate: chỉnh sửa -> put / patch
+        //-delete: xoá -> delete
+    //Postman
+//4.DOM location
+
+
+//reduce có logic
+Array.prototype.reduce2 = function (callback, result) {
+    let i = 0
+    if (arguments.length < 2){
+        i = 1
+        result = thí[0]
+    }
+    for (let i = 0; i < this.length; i++){
+        result = callback(result, this[i], i, this)
+    }
+    return result
+}
+
+const numbers = [1, 2, 3, 4, 5]
+
+const result = numbers.reduce((total, number) => {
+    return total + number
+}, 10)
+
+const result = numbers.reduce2((total, number, index, array) => {
+    console.log(total, number, index, array)
+    return total + number
+}, 10)
+
+
+console.log(result)
