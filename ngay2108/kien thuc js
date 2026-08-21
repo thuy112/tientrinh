@@ -1,0 +1,182 @@
+/*
+//Tổng hợp kiêns thức
+I. Chuỗi, số , mảng cơ bản và toán tử
+- slice(start, end):  cắt 1 đoạn chuỗi, mảng từ vị trí đầu đến vị trí cuối
+- split(separator): cắt chuỗi thành 1 mảng dựa trên ký tự phân cách truyền vào
+- indexOf(value): tìm vị trí (index) xuất hiện đầu tiên của chuỗi/ phần tử
+- trim(): loại bỏ toàn bộ khoảng trắng thừa ở 2 đầu chuỗi
+- push()/pop(): thêm hoặc xoá phần tử ở cuối mảng
+- shift()/unshift(): xoá hoặc thêm phần tử ở đầu mảng
+- splice(index, count,...): xoá, chèn hoặc thay thế phần tử trực tiếp trê mảng gốc
+- concat(): nối 2 hoặc nhiều mảng lại với nhau
+- toFixed(n): làm tròn số thập phân đến n chữ số đằng sau dấu phẩy
+
+II. Các phương thức duyệt mảng nâng cao
+- forEach(): duyêth qua từng phần tử để thực thi
+- map(): biến dổi từng phần tử thành dạng mới và thu và mảng mới
+- filter(): lọc ra tất cả phần tử thoả mãn điều kiện thành mảng mới
+- find(): tìm và trả về phần tử đầu tiên thảo mãn điều kiện
+- some(): kiểm tra xem có ít nhất 1 phần tử đạt yêu cầu không
+- every(): kiểm tra xem tất cả phần tử có đạt yêu cầu hay không
+- reduce(): tích luỹ phần tử mảng thành 1 giá trị duy nhất
+
+III.HTML DOM & xử lý sự kiện(DOM EVENTS)
+- getElementById():  lấy 1 element theo id
+- querySelector()/querySelectorAll(): lấy 1 hoặc tất cả element theo css selector
+- innerText: lấy, sửa văn bản hiển thị thực tế trên giao diện
+- textContent: lấy, sửa văn bản thô(plain text) nguyên bản trong DOM
+- innnerHTML: lấy, chèn thêm cấu trúc thẻ HTML vào bên trong element
+- addEventListener(): lắng nghe sự kiện trên element
+- e.preventDefault(): ngăn chặn hành vi mặc định của trình duyệt
+- e.stopPropagation(): chặn sự kiện bọt (Event Bubbling) lên thẻ cha
+
+IV. ES6+, PROMISE & bất đông bộ
+- let/const: khai báo biến có scope theo khối lệnh({})
+- arrow function: cú pháp viết hàm ngắn gọn(() => {})
+- destructuring: phân rã mảng/object thành các biến riêng lẻ
+- Spred Operator(): trải các phần tử của mảng/object ra
+- promise/ async/ await: quản lý tác vụ bất đồng bộ, tránh callback hell
+- localStorage: lưu trữ dữ liệu dạng key-value ở trình duyệt
+
+1. Khái niệm cơ bản & Cú pháp nền tảngThêm JS vào HTML: Dùng thẻ <script src="..."></script> (đặt cuối <body>)
+.Hộp thoại thông báo:
+   - alert(message): Hiện thông báo đơn giản.confirm(message): Hiện hộp thoại Xác nhận (trả về true/false).
+    - prompt(message): Hiện hộp thoại nhập văn bản (trả về chuỗi hoặc null).
+    - In dữ liệu (Console): console.log(), console.warn(), console.error(), console.table().
+Quản lý thời gian:
+    - setTimeout(callback, ms) / clearTimeout(id): Chạy 1 lần sau khoảng thời gian.
+    - setInterval(callback, ms) / clearInterval(id): Lặp đi lặp lại sau khoảng thời gian.
+Biến (Variables): Khai báo với var, let, const.
+Toán tử (Operators):
+    - Số học: +, -, *, /, % (chia lấy dư), ** (lũy thừa).
+    - Gán: =, +=, -=, *=, /=, **=.
+    - Tăng / Giảm: ++ (Prefix ++x vs Postfix x++), --.
+    - So sánh: So sánh thường (==, !=), So sánh tuyệt đối (===, !==).
+    - Logic: && (AND), || (OR), ! (NOT).
+    - Ternary (3 ngôi): dieuKien ? giaTri1 : giaTri2.
+Kiểu dữ liệu (Data Types):
+    - Nguyên thủy (Primitive): Number, String, Boolean, Undefined, Null, Symbol, BigInt.
+    - Phức tạp (Complex): Object, Array, Function.
+    - Kiểm tra kiểu: typeof variable.
+    - Giá trị Falsy (6 giá trị chuyển về false trong điều kiện): 0, "", null, undefined, NaN, false. (Còn lại là Truthy).
+2. Hàm (Functions)
+Khai báo & Gọi hàm: Cú pháp function tenHam(thamSo) { ... }.
+Tham số & Đối số: Parameter vs Argument.
+Biến arguments: Đối tượng dạng mảng chứa tất cả đối số truyền vào hàm.
+Từ khóa return: Trả về giá trị và thoát khỏi hàm.
+Các loại hàm:
+    - Declaration Function: Có tên, có cơ chế Hoisting (gọi trước khi định nghĩa).    
+    - Expression Function: Gán hàm cho biến, không có Hoisting.
+    - Anonymous Function: Hàm ẩn danh (không tên).
+    - Arrow Function (ES6): Cú pháp () => {}.
+    - sort(): sắp xếp thứ tự từ a->z
+    - reverse(): đảo ngược vị trí ban đầu từ dưới lên trên
+
+3. Chuỗi (String) & Số (Number)
+Chuỗi (String):
+    - Chèn biến (Template Literals - ES6):  Chuỗi ${bien} .
+    - length: Độ dài chuỗi.
+    - indexOf(subStr) / lastIndexOf(subStr): Tìm vị trí chuỗi con.
+    - includes(subStr): Kiểm tra chuỗi con có tồn tại không (true/false).
+    - slice(start, end): Cắt chuỗi.
+    - replace(old, new) / replaceAll(old, new): Thay thế chuỗi.
+    - toUpperCase() / toLowerCase(): Chuyển in hoa / in thường.
+    - trim(): Xóa khoảng trắng 2 đầu.
+    - split(separator): Chuyển chuỗi thành mảng.
+    - charAt(index): Lấy ký tự tại vị trí.
+Số (Number):
+    - Number.isNaN(val): Kiểm tra số NaN.
+    - toFixed(n): Làm tròn số thập phân (trả về chuỗi).
+    - toString(): Chuyển số thành chuỗi.
+4. Mảng (Array)
+Thuộc tính & Kiểm tra:
+    - Array.isArray(val): Kiểm tra mảng.
+    - length: Đếm số phần tử.
+Phương thức biến đổi mảng:
+    - toString() / join(separator): Chuyển mảng thành chuỗi.
+    - pop(): Xóa phần tử cuối.
+    - push(item): Thêm phần tử vào cuối.
+    - shift(): Xóa phần tử đầu.
+    - unshift(item): Thêm phần tử vào đầu.
+    - splice(start, count, item...): Xóa, thêm, sửa tại vị trí bất kỳ.
+    - concat(arr2): Nối mảng.
+    - slice(start, end): Cắt mảng con.
+    - includes(item): Kiểm tra phần tử có trong mảng không.
+Phương thức duyệt mảng (Higher-Order Functions):
+    - forEach(callback): Duyệt từng phần tử.
+    - every(callback): Kiểm tra tất cả thỏa điều kiện.
+    - some(callback): Kiểm tra chỉ cần 1 thỏa điều kiện.
+    - find(callback): Tìm phần tử đầu tiên thỏa điều kiện.
+    - filter(callback): Lọc tất cả phần tử thỏa điều kiện thành mảng mới.
+    - map(callback): Biến đổi từng phần tử thành mảng mới.
+    - reduce(callback, initialValue): Tích lũy mảng thành 1 giá trị duy nhất.
+5. Đối tượng (Object), Math & Date
+Object:
+    Cấu trúc Key-Value: { key: value }.
+    Thao tác: Lấy giá trị (obj.key hoặc obj['key']), Thêm/Sửa (obj.key = val), Xóa (delete obj.key).
+    Object Constructor: Hàm tạo mẫu đối tượng (function User(...)).
+    Object Prototype: Thêm thuộc tính/phương thức dùng chung (User.prototype.className = ...).
+    Object.keys(obj) / Object.values(obj) / Object.entries(obj): Lấy danh sách key/value/cặp key-value.
+Math Object:
+    Math.PI: Số PI.
+    Math.round(x): Làm tròn gần nhất.
+    Math.abs(x): Giá trị tuyệt đối.
+    Math.ceil(x): Làm tròn lên.
+    Math.floor(x): Làm tròn xuống.
+    Math.random(): Số ngẫu nhiên từ 0 đến sát 1.
+    Math.min(...) / Math.max(...): Tìm min / max.
+Date Object:
+    new Date(): Tạo đối tượng thời gian.
+    Các hàm lấy thông tin: getFullYear(), getMonth() (0-11), getDate(), getDay() (0-6), getHours(), getMinutes(), getSeconds(), getTime() (timestamp).
+6. Cấu trúc Điều khiển & Vòng lặp
+Rẽ nhánh: if / else if / else, switch / case / break / default.
+Vòng lặp:
+    for: Lặp theo chỉ số/bước tăng.
+    for...in: Duyệt qua các key của Object hoặc chỉ số mảng.
+    for...of: Duyệt qua các giá trị (value) của Mảng hoặc Chuỗi.
+    while: Lặp khi điều kiện còn đúng.
+    do...while: Chạy ít nhất 1 lần rồi mới kiểm tra điều kiện.
+Điều khiển vòng lặp: break (Thoát vòng lặp), continue (Bỏ qua lượt hiện tại).
+7. HTML DOM & Thao tác Giao diện
+Truy vấn Element:
+    document.getElementById('id')
+    document.getElementsByClassName('class')document.
+    getElementsByTagName('tag')
+    document.querySelector('selector')       
+    document.querySelectorAll('selector')
+Nội dung & Thuộc tính Element:
+    innerText: Text hiển thị thực tế (bị ảnh hưởng bởi CSS).    
+    textContent: Text thô nguyên bản trong DOM.
+    innerHTML / outerHTML: Lấy hoặc chèn thẻ HTML.
+    getAttribute('attr') / setAttribute('attr', 'val') / removeAttribute('attr').
+Style & Class:
+    Inline Style: element.style.color = 'red', Object.assign(element.style, {...}).
+    classList: add(), remove(), toggle(), contains().
+Cây DOM Node (DOM Traversal):
+    nodeName, children, children.length, firstElementChild, lastElementChild, parentNode, parentElement.
+8. Xử lý Sự kiện (DOM Events)
+Sự kiện phổ biến: onclick, ondblclick, onchange, oninput, onkeyup, onkeydown, onsubmit, onmouseover, onmouseout.
+Xử lý luồng sự kiện:
+    e.preventDefault(): Chặn hành vi mặc định của trình duyệt (ví dụ: reload form, nhảy link <a>).
+    e.stopPropagation(): Chặn sự kiện nổi bọt (Event Bubbling) lên element cha.
+Event Listener:
+    element.addEventListener('event', callback): Lắng nghe sự kiện. 
+    element.removeEventListener('event', callback): Hủy bỏ lắng nghe sự kiện.
+9. Khái niệm Nâng cao, ES6+ & Async JSJSON: 
+JSON.stringify() (Object $\rightarrow$ JSON String), JSON.parse() (JSON String $\rightarrow$ Object).
+Storage: localStorage / sessionStorage (setItem, getItem, removeItem, clear).
+Bất đồng bộ (Asynchronous JS):
+    Synchronous (Đồng bộ) vs Asynchronous (Bất đồng bộ).
+    Callback & Callback Hell.
+    Promise: Các trạng thái (Pending, Fulfilled, Rejected), các phương thức .then(), .catch(), .finally(), Promise.all().
+    Fetch API: Gọi API lấy dữ liệu từ server (fetch(url).then(res => res.json())).
+    Async / Await: Cú pháp hiện đại xử lý Promise giống như code đồng bộ.
+Cú pháp ES6+:
+    Scope: Global, Code Block ({} với let/const), Function scope.
+    Default Parameter Values: Giá trị mặc định cho tham số function fn(a = 1).
+    Destructuring: Phân rã mảng/object const { name, age } = user.
+    Rest Parameters: Tham số còn lại function fn(...rest).
+    Spread Operator: Trải mảng/object [...arr1, ...arr2], { ...obj1, ...obj2 }.
+    Enhanced Object Literals: Định nghĩa object ngắn gọn { name, age }.
+    ES6 Modules: export, export default, import ... from ....
+*/
