@@ -1,0 +1,131 @@
+Cách viết Tailwind
+- font-size: text-4x1: chữ 
+    text-xs
+   ↓
+    text-sm
+   ↓
+    text-base
+   ↓
+    text-lg
+   ↓
+    text-xl
+   ↓
+    text-2xl
+   ↓
+    text-3xl
+   ↓
+    text-4xl
+   ↓
+    text-5xl
+   ↓
+    ...(kích thước tăng dần)
+- Đổi chiều rộng và chiều cao: 
+    w-10: chiều rộng
+    h-10: chiều cao
+    max-w-*: chiều rộng tối đa
+    min-h-*: chiều cao tối thiểu
+- font-weight: (kích thước chữ)
+    font-thin(100), 
+    font-extralight(200), 
+    font-light(300),
+    font-normal(400),
+    font-medium(500),
+    font-semibold(600),
+    font-bold(700),
+    font-extrabold(800),
+    font-black(900).
+- Khoảng cách giữa
+    leading-*: các dòng
+    tracking-*: các ký tự
+- Màu:
+    Chữ màu text-blue-500: thay đổi đc màu ở giữa và 500 kia là mức độ màu
+    Thay đổi màu nền: bg-blue-500
+    Thay đổi viền màu: border-blue-500
+- Căn chữ ở giữa: text-center
+- Các Padding: khoảng cách bên trong
+    p  = tất cả (p-4)
+    px = trái + phải
+    py = trên + dưới
+    pt = trên
+    pb = dưới
+    pl = trái
+    pr = phải
+- margin: khoảng cách bên ngoài (tương tự padding)
+    m-4
+    mx-4
+    my-4
+    mt-4
+    mb-4
+    ml-4
+    mr-4
+    (đặc biệt mx-auto: căn giữa theo chiều ngang)
+- FLEX: căn giữa
+    flex -> display: flex
+    flex-col: theo chiều dọc
+    flex-row: theo chiều ngang
+    justify-center -> justify-content: center: căn chỉnh trục chính
+    items-center -> align-items: center: căn chỉnh trục phụ
+    khoảng cách giữa các phần tử: gap-4
+- Đường viền và bo góc
+    rounded-lg -> bo góc
+    shadow-lg -> đổ bóng
+    border-*: đường viền(* cho số, số càng lớn đường viền càng to)
+- Trạng thái khi tương tác:
+    hover: khi di chuột vào
+    focus: khi phần tử được bấm vô
+    active: khi nhấn vô phần tử mới hiện và sẽ mất luôn trong 1s
+    disabled: không cho người dùng tương tác
+- Hệ thống lưới (đi chung vs nhau): chia cột 
+    grid = bật CSS Grid.
+    grid-cols-* = số cột.(* số cột)
+    gap-* = khoảng cách giữa các ô.
+- Responsive: giao diện ứng dụng màn hình
+    sm: nhỏ
+    md: vừa
+    lg: lớn
+    xl: rất lớn
+- phần tử hay dùng:
+    relative: định vị tương đối(làm mốc để cho phần tử absolute bám theo)
+    absolute: định vị tuyệt đối (đi cùng phần tử relative và có sau phần tử này)
+        relative / absolute / fixed / sticky: thằng trên cùng là cha rồi lần lượt
+    fixed: Phần tử cố định theo màn hình, khi bạn cuộn trang nó vẫn giữ vị trí.
+    sticky: Ban đầu nó nằm bình thường trong trang. Khi cuộn đến vị trí được chỉ định, nó dính lại.
+    Khoảng cách:
+        top-*: khoảng cách từ phía trên
+        right-*: khoảng cách từ bên phải
+        bottom-*: khoảng cách từ phía dưới
+        left-*: khoảng cách từ bên trái
+        inset-*: khoảng cách cả 4 phía
+- Display — Hiển thị phần tử
+    block: Phần tử dạng khối. Nó thường chiếm toàn bộ chiều rộng có thể có và phần tử tiếp theo xuống dòng.
+    inline: Nó chỉ chiếm đúng phần diện tích cần thiết và có thể nằm cùng một dòng với phần tử khác.
+    inline-block: Vừa nằm cùng dòng như inline, vừa cho phép đặt width / height / padding / margin giống block.
+    flex: Biến phần tử thành Flex container. Dùng để sắp xếp các phần tử con.
+    grid: Biến phần tử thành Grid container. Dùng để chia nội dung thành hàng và cột.
+    hidden: Ẩn hoàn toàn phần tử(không nhìn thấy) và không chiếm không gian
+    Opacity — Độ trong suốt: phần tử trong suốt bao nhiêu, vẫn chiếm không gian
+    Z-index — Thứ tự nằm trên/dưới(dùng khi phần tử đè lên nhau z-*(* càng lớn thì ưu tiên nàm trên))
+    Transition — Chuyển động mượt- đi chung duration-300: thời gian hiệu ứng là 0.3s
+    ease-in-out: chuyển động: hiệu ứng bd chậm -> nhanh -> chậm lại
+- Transform — Biến đổi phần tử
+    scale-*: phóng to, thu nhỏ(* số phóng)
+    rotate-*: xoay bao nhiêu độ 
+    translate-x-*: di chuyển theo chiều ngang(dương: phải, âm: trái)
+    translate-y-*: di chuyển theo chiều dọc(dương: xuống, âm: lên)
+- Animation — Hoạt ảnh:
+    animate-spin: xoay liên tục
+    animate-ping: phóng to + mờ dần
+    animate-pulse: nhấp nháy / mờ sáng nhẹ
+    animate-bounce: nảy lên xuống
+- Dark mode — Chế độ tối:
+    dark:bg-black: nền đen
+    dark:text-white: chữ trắng
+- Arbitrary values — Giá trị tùy chỉnh: thêm []
+- cursor-* — Kiểu con trỏ chuột
+    cursor-pointer: con trỏ thành hình bàn tay
+    cursor-not-allowed: con trỏ báo không được phép
+- Overflow: xử lý nội dung tràn
+    overflow-hidden     → ẩn phần tràn
+    overflow-auto       → tự tạo thanh cuộn khi cần
+    overflow-scroll     → luôn có thanh cuộn
+    overflow-visible    → cho phép tràn

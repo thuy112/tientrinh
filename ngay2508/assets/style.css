@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-dark: #181E4B;
+  --color-brand-orange: #DF6951;
+  --color-brand-yellow: #F1A501;
+  --color-brand-text: #5E6282;
+  --color-brand-navy: #14183E;
+
+  --font-poppins: 'Poppins', sans-serif;
+  --font-volkhov: 'Volkhov', serif;
+}
