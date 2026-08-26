@@ -1,0 +1,5 @@
+- Responsive: tích hợp màn hình khi phóng to nhỏ
+    sm, md, lg, xl
+    cách kết hợp: <div class="w-full md:w-1/2 lg:w-1/3">
+        w-full: màn hình full 100%, md:w-1/2: màn 50%, lg:w-1/3: màn hình 33.33%
+- 
