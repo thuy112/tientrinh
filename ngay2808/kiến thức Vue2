@@ -1,0 +1,34 @@
+/*
+- Khởi tạo ban đầu của Vue bằng cú pháp new Vue({...})
+- Thuộc tính el(Element): tạo kết nối  giữa vue và 1 ptu của Dom cụ thể trong html
+- thuộc tính: data - nơi chứa toàn bộ dữ liệu phản ứng (reactive data)
+- Biểu thức: {{ }}: cú pháp dùng để đưa biến từ data hiển thị lên màn hình
+    + Có thể viết js đơn giản bên trong
+         In chuỗi: {{ product }}
+         Ghép chuỗi: {{ product + ' ' + 'Cao cấp' }}
+         Phép toán: {{ price * quantity }}
+         Gọi hàm JavaScript: {{ product.toUpperCase() }}
+- Data Binding: {{}} đưa dữ liệu từ js sang html
+    - v-bind: (viết tắt :) đưa dữ liệu thuộc tính của thẻ html(như src của ảnh, href của link,...)
+    - vd: <img :src="img" :alt="">
+- Tương tác bằng sự kiện người dùng
+    @ (hoặc v-on): dùng để lắng nghe người dùng tác động lên thẻ html(vd: kích chuột, gõ phím,...)
+    v-on: click="...": viết tắt @click="..."(sự kiện kích chuột)
+    v-on: submit.prevent="...": viết tắt @submit.prevent="..."(sự kiện submit form)
+    v-on: keyup.enter="...": viết thành @keyup.enter="..."(sự kiện bấm phím enter)
+- Tương tác điều kiện (Ẩn/ Hiện)
+    - v-if/ v-else/ v-else-if: Thêm hoặc xoá hẳn thẻ HTML ra khỏi Dom(trang web) nếu đk đúng hoặc sai
+        - vd: <p v-if="isLoggedIn">Chào mừng bạn quay lại!</p>
+            <p v-else>Vui lòng đăng nhập.</p>
+    - v-show: chỉ ẩn hoặc hiện thẻ html bằng cách dổi css, chứ k xoá hẳn thẻ khỏi dom. Thường dùng cho các thành phần ẩn/ hiện liên tục(menu, dropdown, modal)
+- Tương tác danh sách
+    v-for: Lặp qua một mảng dữ liệu trong data để tự động sinh ra các thẻ HTML tương ứng. Lưu ý luôn đi kèm :key để Vue quản lý hiệu năng tốt nhất.
+    vd: <ul>
+            <li v-for="item in products" :key="item.id">
+                {{ item.name }} - ${{ item.price }}
+            </li>
+        </ul>
+- Tương tác 2 chiều với from(two-way data Binding)
+    v-model: đồng bộ dữ liệu 2 chiều giữa ô nhập liệu (<input>, <select>, <textarea>). Khi người dùng gõ phím thay đổi ô input, biến tự đổi và ngược lại
+
+*/
