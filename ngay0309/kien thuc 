@@ -1,0 +1,160 @@
+I. Declarative Rendering và cấu trúc Component(Bản chất cốt lõi của Vue)
+    - Declarative Rendering & Tại sao không tự sửa DOM?
+        - Nghĩa là gì? Là cơ chế lập trình mà ở đó bạn chỉ cần mô tả giao diện mong muốn dựa trên dữ liệu, còn Vue sẽ tự động lo việc cập nhật hiển thị trên trình duyệt (DOM). Bạn không cần phải tự tay dùng JavaScript thuần (document.getElementById, innerHTML, v.v.) để thay đổi giao diện.
+        -Dùng để làm gì?
+            + Giảm thiểu lỗi: Tránh các lỗi do quên cập nhật DOM khi trạng thái thay đổi.
+            + Dễ bảo trì: Giúp code gọn gàng, tập trung vào xử lý logic dữ liệu thay vì bận tâm thao tác DOM rườm rà.
+            + Tối ưu hiệu suất: Vue dùng Virtual DOM để so sánh và chỉ cập nhật những điểm thay đổi nhỏ nhất trên màn hình thay vì vẽ lại toàn bộ.
+    - Cấu trúc một File .vue Component
+        - Một file .vue component thường có cấu trúc gồm ba phần chính: template, script, và style.
+            + Template: Chứa HTML để hiển thị giao diện người dùng.
+            + Script: Chứa logic của thành phần, bao gồm data, methods, computed properties, lifecycle hooks, và các import/export cần thiết.
+            + Style: Chứa CSS để định dạng giao diện của thành phần, có thể sử dụng scoped styles để giới hạn phạm vi áp dụng CSS chỉ trong thành phần đó.
+        - Các thành phần(component) có thể được lồng nhau, tức là một thành phần(component) có thể chứa các thành phần(component) khác bên trong nó.
+        - Các thành phần(component) có thể được tái sử dụng nhiều lần trong ứng dụng, giúp giảm thiểu việc viết lại mã và tăng tính modular của ứng dụng.
+        - Cấu trúc viết:
+            <template>
+                <!-- HTML -->
+            </template>
+
+            <script>
+            export default {
+                // JavaScript của component
+            }
+            </script>
+
+            <style>
+                /* CSS */
+            </style>
+        - Các thành phần(component) có thể nhận props từ cha để truyền dữ liệu xuống, và có thể phát ra các sự kiện (events) để giao tiếp với cha.
+
+II. Hiểu {{}} - Interpolation
+    - Interpolation là cú pháp trong Vue để hiển thị dữ liệu từ JavaScript vào trong HTML.
+    - Sử dụng dấu ngoặc kép đôi {{}} để chèn giá trị của một biến hoặc biểu thức JavaScript vào trong template.
+    - Ví dụ: 
+        <template>
+            <div>
+                <p>{{ message }}</p>
+            </div>
+        </template>
+
+        <script>
+        export default {
+            data() {
+                return {
+                    message: 'Hello, Vue!'
+                }
+            }
+        }
+        </script>
+    - Interpolation chỉ có thể được sử dụng trong template và không thể sử dụng trong các thuộc tính HTML như class hay style.
+    - Lấy giá trị từ data, computed properties, hoặc methods để hiển thị trong template.
+    - Cũng có thể truy cập object hoặc array trong interpolation, ví dụ: {{ user.name }} hoặc {{ items.length }}.
+    - {{}} có thể dung biểu thức đơn giản, nhưng không thể sử dụng các câu lệnh điều kiện hoặc vòng lặp trực tiếp trong interpolation.
+III. Hiểu v-bind  và dấu :
+    - v-bind: là một directive trong Vue dùng để liên kết dữ liệu từ JavaScript vào các thuộc tính HTML.
+    - lấy dữ liệu từ js sang html
+    - v-bind không chỉ dùng cho src mà còn dùng cho các thuộc tính khác như href, class, style, alt, title, v.v.
+        - :src là viết tắt của v-bind:src thuoccj tính src của thẻ img
+        - Cú pháp:
+            <template>
+                <img v-bind:src="imageUrl" alt="Image">
+            </template> 
+        - :href là viết tắt của v-bind:href thuộc tính href của thẻ a
+        - Cú pháp:
+            <template>
+                <a v-bind:href="linkUrl">Click here</a>
+            </template>
+        - :class là viết tắt của v-bind:class thuộc tính class của thẻ
+        - Cú pháp:
+            <template>
+                <div v-bind:class="{'active': isActive, 'disabled': isDisabled  }">Content</div>
+            </template>
+        - :style là viết tắt của v-bind:style thuộc tính style của thẻ
+        - Cú pháp:
+            <template>
+                <div v-bind:style="{ color: textColor, fontSize: fontSize + 'px' }">Styled Text</div>
+            </template>
+    - v-bind có thể được sử dụng để liên kết dữ liệu từ JavaScript vào các thuộc tính HTML, giúp tạo ra giao diện động và linh hoạt hơn.
+    - Ngoài ra, v-bind còn có thể được sử dụng để truyền props từ cha xuống con trong các component, giúp tạo ra các thành phần(component) tái sử dụng và linh hoạt hơn.
+    - Nói đơn giản v-bind: là lấy giái trị của biến gán vào thuộc tính html, còn dấu : là viết tắt của v-bind: giúp code ngắn gọn hơn.
+IV. Hiểu v-on / @ -  Bắt sự kiện(Tương tác với người dùng)
+    - v-on: là một directive trong Vue dùng để lắng nghe các sự kiện từ người dùng và gọi các phương thức (methods) tương ứng.
+    - Dấu @ là viết tắt của v-on, giúp code ngắn gọn hơn.
+    - Cú pháp:
+        <template>
+            <button v-on:click="handleClick">Click me</button>
+            <!-- hoặc -->
+            <button @click="handleClick">Click me</button>
+        </template>
+
+        <script>
+        export default {
+            methods: {
+                handleClick() {
+                    alert('Button clicked!');
+                }
+            }
+        }
+        </script>
+    - v-on có thể lắng nghe nhiều loại sự kiện khác nhau như click, input, submit, mouseover, keyup, v.v.
+    - Ngoài ra, v-on còn hỗ trợ các modifier để xử lý sự kiện một cách linh hoạt hơn, ví dụ: .prevent, .stop, .capture, .self, .once.
+    - Ví dụ:
+        <template>
+            <form @submit.prevent="handleSubmit">
+                <input type="text" v-model="inputValue">
+                <button type="submit">Submit</button>
+            </form>
+        </template>
+    - Hiểu đơn giản v-on / @ là dùng để kiểu chỉ các hoạt động người dùng sẽ thực hiện như click, submit, input, mouseover, keyup,... và gọi các phương thức tương ứng trong component.
+    - Các @ cần nhận biết
+        - @click: Bắt sự kiện click chuột.
+        - @input: Bắt sự kiện khi người dùng nhập dữ liệu vào input.
+        - @submit: Bắt sự kiện khi form được submit.
+        - @mouseover: Bắt sự kiện khi con trỏ chuột di chuyển vào phần tử.
+        - @keyup: Bắt sự kiện khi người dùng nhấn phím và thả ra.
+        - @keydown: Bắt sự kiện khi người dùng nhấn phím.
+        - @change: Bắt sự kiện khi giá trị của một input thay đổi.
+        - @focus: Bắt sự kiện khi một input hoặc textarea nhận được focus.
+        - @blur: Bắt sự kiện khi một input hoặc textarea mất focus.
+    - .prevent → ngăn hành vi mặc định
+        .stop → ngăn event bubbling
+        .enter → chỉ xử lý khi nhấn Enter
+V. Phân biệt HTML và Vue syntax
+    - HTML là ngôn ngữ đánh dấu siêu văn bản, được sử dụng để tạo cấu trúc và nội dung của trang web.
+    - Vue syntax là cú pháp đặc biệt của Vue.js, được sử dụng để tạo các thành phần(component) và quản lý dữ liệu trong ứng dụng Vue.
+    - Một số điểm khác biệt chính giữa HTML và Vue syntax:
+        - HTML sử dụng các thẻ và thuộc tính chuẩn, trong khi Vue syntax sử dụng các directive như v-if, v-for, v-bind, v-on, v-model, v-show, v-pre, v-cloak, v-once.
+        - HTML không có khả năng tương tác với dữ liệu động, trong khi Vue syntax cho phép liên kết dữ liệu từ JavaScript vào giao diện người dùng thông qua interpolation {{}} và directives.
+        - HTML không hỗ trợ component hóa, trong khi Vue syntax cho phép tạo các thành phần(component) tái sử dụng và lồng nhau.
+        - HTML không có cơ chế quản lý trạng thái hoặc lifecycle hooks, trong khi Vue syntax cung cấp các tính năng này thông qua data, methods, computed properties và lifecycle hooks.
+    - Tóm lại, HTML là ngôn ngữ cơ bản để xây dựng giao diện, trong khi Vue syntax là một phần mở rộng của HTML, cung cấp các tính năng mạnh mẽ để xây dựng các ứng dụng web động và tương tác.
+VI. Hiểu v-model - Two-way Data Binding
+    - v-model là một directive trong Vue dùng để tạo liên kết hai chiều (two-way binding) giữa dữ liệu trong component và giá trị của các input, textarea, hoặc select.
+    - Khi người dùng thay đổi giá trị của input, giá trị trong data sẽ tự động cập nhật, và ngược lại, khi giá trị trong data thay đổi, giá trị hiển thị trên giao diện cũng sẽ tự động cập nhật.
+    - Cú pháp:
+        <template>
+            <input v-model="message" placeholder="Type something">
+            <p>{{ message }}</p>
+        </template>
+
+        <script>
+        export default {
+            data() {
+                return {
+                    message: ''
+                }
+            }
+        }
+        </script>
+    - v-model có thể được sử dụng với các loại input khác nhau như text, checkbox, radio, select, và textarea.
+    - Ngoài ra, v-model còn hỗ trợ các modifier để xử lý dữ liệu một cách linh hoạt hơn, ví dụ: .lazy, .number, .trim.
+        + .lazy: Thay vì cập nhật dữ liệu ngay lập tức sau mỗi ký tự gõ (input), nó chỉ cập nhật khi người dùng bấm chuột ra ngoài hoặc ấn Enter.
+        + .number: Tự động chuyển đổi giá trị nhập vào thành kiểu số (Number).
+        + .trim: Tự động loại bỏ khoảng trắng ở đầu và cuối chuỗi nhập vào.
+    - Ví dụ:
+        <template>
+            <input v-model.lazy="message" placeholder="Type something">
+            <p>{{ message }}</p>
+        </template>
+    - Hiểu đơn giản v-model là dùng để liên kết dữ liệu giữa input và data trong component một cách tự động và hai chiều.
