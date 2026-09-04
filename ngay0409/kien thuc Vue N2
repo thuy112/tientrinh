@@ -1,0 +1,101 @@
+I. Các kiểu điều kiện hay gặp với v-if / v-show
+    - Kiểu 2 nhánh (Đ/S): v-if và v-else
+        + Hay dùng cho trạng thái có/ không, ẩn hiện dựa trên 1 biến boolean
+        + ý nghĩa: Nếu điều kiện đúng thì hiển thị, sai thì ẩn đi
+        + Cú pháp: 
+            <div v-if="isShow">Hiển thị khi isShow = true</div>
+            <div v-else>Hiển thị khi isShow = false</div>
+    - Kiểu nhiều nhanh: v-if, v-else-if, v-else
+        + Hay dùng cho nhiều trạng thái khác nhau, ẩn hiện dựa trên 1 biến có nhiều giá trị
+        + ý nghĩa: Nếu điều kiện đúng thì hiển thị, sai thì ẩn đi
+        + Cú pháp: 
+            <div v-if="status === 'success'">Hiển thị khi status = success</div>
+            <div v-else-if="status === 'warning'">Hiển thị khi status = warning</div>
+            <div v-else>Hiển thị khi status = error</div>
+II. Các kiểu lặp dữ liệu hay gặp với v-for
+    - Kiểu 1: Lặp mảng lấy ra từng item
+        + Hay dùng cho hiển thị danh sách sản phẩm, danh sách bài viết, danh sách người dùng,...
+        + Cú pháp:
+            <ul>
+                <li v-for="item in items" :key="item.id">{{ item.name }}</li>
+            </ul>
+    - Kiểu 2: Lặp mảng lấy ra từng item và index
+        + Hay dùng cho hiển thị danh sách sản phẩm, danh sách bài viết, danh sách người dùng,... và muốn lấy ra vị trí của item trong mảng
+        + Lưu ý: index ở đây chỉ dùng để hiển thị số thứ tự(stt) ra màn hình, tuyệt đối không được nhét vào làm :key
+        + Cú pháp:
+            <ul>
+                <li v-for="(item, index) in items" :key="item.id">{{ index + 1 }}. {{ item.name }}</li>
+            </ul>
+    - Kiểu 3: Lặp qua các thuộc tính của 1 Object(Đối tượng)
+        + Hay dùng cho hiển thị thông số ký thuật của sản phẩm, cấu hình chi tiết của sản phẩm, thông tin chi tiết của người dùng,...
+        + Cú pháp:
+            <ul>
+                <li v-for="(value, key) in object" :key="key">{{ key }}: {{ value }}</li>
+            </ul>
+    - Kiểu 4: Lặp qua 1 số lần nhất định
+        + Hay dùng cho hiển thị danh sách sản phẩm, danh sách bài viết, danh sách người dùng,... nhưng không biết trước số lượng item trong mảng
+        + Cú pháp:
+            <ul>
+                <li v-for="n in 10" :key="n">{{ n }}</li>
+            </ul>
+    - Kiểu 5: Lặp qua 1 mảng có nhiều cấp độ lồng nhau
+        + Hay dùng cho hiển thị danh sách sản phẩm, danh sách bài viết, danh sách người dùng,... nhưng có nhiều cấp độ lồng nhau
+        + Cú pháp:
+            <ul>
+                <li v-for="item in items" :key="item.id">
+                    {{ item.name }}
+                    <ul>
+                        <li v-for="subItem in item.subItems" :key="subItem.id">{{ subItem.name }}</li>
+                    </ul>
+                </li>
+            </ul>
+III. Các kiểu xử lý chống lỗi Reactivity (Mảng trong Vue 2)
+    - Kiểu 1: Thêm phần tử vào mảng
+        + Hay dùng cho thêm sản phẩm, thêm bài viết, thêm người dùng,...
+        + Cú pháp:
+            this.items.push(newItem)
+    - Kiểu 2: Xóa phần tử khỏi mảng
+        + Hay dùng cho xóa sản phẩm, xóa bài viết, xóa người dùng,...
+        + Cú pháp:
+            this.items.splice(index, 1)
+    - Kiểu 3: Cập nhật phần tử trong mảng
+        + Hay dùng cho cập nhật sản phẩm, cập nhật bài viết, cập nhật người dùng,...
+        + Cú pháp:
+            this.$set(this.items, index, newItem)
+VI. Conditional Rendering(v-if và v-show)
+    - Bản chất sự khác biệt
+        v-if(đk thật sự): Khi điều kiện sai, Vue sẽ loại bỏ hoàn toàn phần tử khỏi DOM, khi điều kiện đúng thì Vue sẽ render lại phần tử đó vào DOM.
+        v-show(ẩn hiện bằng css): Khi điều kiện sai, Vue sẽ giữ nguyên phần tử trong DOM nhưng ẩn nó đi bằng cách thêm style="display: none", khi điều kiện đúng thì Vue sẽ hiển thị lại phần tử đó bằng cách loại bỏ style="display: none".
+    - Khi nào nên dùng v-if và v-show
+        + Dùng v-if khi điều kiện hiển thị thay đổi ít, ví dụ như hiển thị một modal, một popup, một dropdown,...
+        + Dùng v-show khi điều kiện hiển thị thay đổi nhiều, ví dụ như hiển thị một danh sách sản phẩm, một danh sách bài viết, một danh sách người dùng,...
+    - Bug kinh điển hay gặp khi dùng v-if và v-show
+        + Khi dùng v-if và v-show cùng lúc trên cùng một phần tử, Vue sẽ ưu tiên v-if trước, nếu điều kiện của v-if sai thì phần tử sẽ bị loại bỏ khỏi DOM, còn nếu điều kiện của v-if đúng thì phần tử sẽ được hiển thị nhưng vẫn bị ẩn đi bởi v-show.
+        + Khi dùng v-if và v-show cùng lúc trên các phần tử khác nhau nhưng có cùng một biến điều kiện, Vue sẽ render lại toàn bộ các phần tử đó mỗi khi biến điều kiện thay đổi, dẫn đến hiệu suất kém.
+V. List Rendering(v-for và :key)
+    - Cách sử dụng cơ bản
+        + v-for là directive dùng để lặp qua một mảng hoặc một object và render ra các phần tử tương ứng.
+        + :key là thuộc tính dùng để xác định duy nhất mỗi phần tử trong danh sách, giúp Vue tối ưu hóa việc render lại các phần tử khi dữ liệu thay đổi.
+    - Ý nghĩa bắt buộc của :key và hiểm hoạ khi dùng index
+        + :key giúp Vue nhận biết được phần tử nào đã thay đổi, phần tử nào đã bị xóa hoặc thêm mới, từ đó chỉ render lại những phần tử cần thiết, tránh render lại toàn bộ danh sách.
+        + Nếu không dùng :key hoặc dùng index làm :key, Vue sẽ không thể nhận biết được sự thay đổi của các phần tử trong danh sách, dẫn đến việc render lại toàn bộ danh sách mỗi khi dữ liệu thay đổi, gây ra hiệu suất kém và lỗi hiển thị.
+    - Cạm bẫy của v-for
+        + Khi dùng v-for lặp qua một mảng có nhiều cấp độ lồng nhau, nếu không dùng :key cho từng cấp độ, Vue sẽ không thể nhận biết được sự thay đổi của các phần tử trong từng cấp độ, dẫn đến việc render lại toàn bộ danh sách mỗi khi dữ liệu thay đổi, gây ra hiệu suất kém và lỗi hiển thị.
+        + Khi dùng v-for lặp qua một object, nếu không dùng :key cho từng thuộc tính, Vue sẽ không thể nhận biết được sự thay đổi của các thuộc tính trong object, dẫn đến việc render lại toàn bộ danh sách mỗi khi dữ liệu thay đổi, gây ra hiệu suất kém và lỗi hiển thị.
+VI. Vòng đời của Component
+    - Các hook trong vòng đời của Component
+        + beforeCreate: Được gọi ngay sau khi instance được khởi tạo, trước khi dữ liệu và event được thiết lập.
+        + created: Được gọi ngay sau khi instance được khởi tạo, dữ liệu và event đã được thiết lập.
+            thời điểm: data và sự kiện đã được thiết lập(reactive), nhưng DOM chưa được tạo(chưa có template trên màn hình)
+        + beforeMount: Được gọi ngay trước khi instance được mount vào DOM.
+        + mounted: Được gọi ngay sau khi instance được mount vào DOM.
+        + beforeUpdate: Được gọi ngay trước khi dữ liệu thay đổi và DOM được cập nhật.
+        + updated: Được gọi ngay sau khi dữ liệu thay đổi và DOM được cập nhật.
+        + beforeDestroy: Được gọi ngay trước khi instance bị hủy.
+        + destroyed: Được gọi ngay sau khi instance bị hủy.
+    - Ý nghĩa thực tiễn: chống Memory Leak, tối ưu hiệu suất, debug dễ dàng hơn
+        + Khi component được tạo ra, các hook sẽ được gọi theo thứ tự: beforeCreate -> created -> beforeMount -> mounted.
+        + Khi dữ liệu trong component thay đổi, các hook sẽ được gọi theo thứ tự: beforeUpdate -> updated.
+        + Khi component bị hủy, các hook sẽ được gọi theo thứ tự: beforeDestroy -> destroyed.
+    - Quy tắc vàng khi code: cứ thấy trong mounted có đăng ký cái gì(interval,envent listener,subscription), lập tức kiểm tra xem đã có beforeDestroy tương ứng để dọn dẹp chưa.
+    
