@@ -1,0 +1,130 @@
+I. Component là gì?
+    - Là 1 phần giao diện độc lập, có thể tái sử dụng trong ứng dụng Vue.
+    - Component có thể chứa HTML, CSS và JavaScript để định nghĩa cách hiển thị và hành vi của nó.
+    - Thay vì viết nhiều dòng html trong 1 file chúng ta có thể chia thành nhiều component nhỏ để dễ quản lý và tái sử dụng.
+    - Component có thể được nhúng vào các component khác, tạo thành một cây component.
+    - VD: .vue cha: <product-item></product-item>
+          .vue con: <template>
+                        <div>
+                            <h2>Laptop</h2>
+                            <p>15.000.000 VNĐ</p>
+                        </div>
+                    </template>
+    - Component cha và component con
+        Ví dụ:
+            <template>
+                <div>
+                    <header-component></header-component>
+                    <product-list></product-list>
+                    <footer-component></footer-component>
+                </div>
+            </template>
+            Quan hệ:
+            App.vue
+            │
+            ├── HeaderComponent
+            ├── ProductList
+            |── FooterComponent
+            App.vue → cha
+            ProductList → con
+II. Props -  phần quan trọng
+    - Là cácg component cha truyền dữ liệu xuống component con.
+    - Props là một cơ chế để truyền dữ liệu từ component cha xuống component con.
+    - Props giúp component con nhận dữ liệu từ component cha và sử dụng nó trong quá trình render.
+    - Props có thể được định nghĩa trong component con bằng cách sử dụng thuộc tính props.
+    - Vd: 
+        Cha có: data() {
+                    return {
+                        username: 'Thuy'
+                    }
+                }
+                <user-info :username="username"></user-info>
+        Con có: props: ['username']
+    - Props truyền được những gì?
+        - Props có thể truyền các kiểu dữ liệu cơ bản như 
+        string: <user-info name="Thuy"></user-info>
+        number: <user-info :age="22"></user-info> nếu này không có : thì lại là string
+        boolean: <user-info :isAdmin="true"></user-info>
+        array: <user-list :users="users"></user-list>
+        object: <user-info :user="user"></user-info>
+        - Props cũng có thể truyền các hàm (function) từ component cha xuống component con.
+        - Props có thể truyền các giá trị động từ component cha xuống component con.
+    - props không nên bị con sửa trực tiếp
+        - VD: ví dụ ở trên thì con không thể sửa kiểu
+                this.username = 'Minh' vì username là thuộc quyền quản lý của cha nên không thể sửa được.
+III. Event - phần quan trọng
+    - Là cơ chế để component con gửi dữ liệu lên component cha.
+    - Event giúp component con thông báo cho component cha về các sự kiện hoặc thay đổi dữ liệu.
+    - Component con có thể phát ra các sự kiện bằng cách sử dụng phương thức $emit.
+    - Component cha có thể lắng nghe các sự kiện từ component con bằng cách sử dụng cú pháp v-on hoặc @.
+    - Vd: 
+        Con có: this.$emit('update', newValue)
+        Cha có: <child-component @update="handleUpdate"></child-component>
+    - Event có thể truyền dữ liệu từ component con lên component cha thông qua các tham số
+        - VD: this.$emit('update', newValue) → cha nhận được newValue
+    - Event có thể được sử dụng để giao tiếp giữa các component không có quan hệ cha con trực tiếp thông qua một event bus hoặc Vuex.
+    - Event giúp tách rời các component và làm cho chúng trở nên linh hoạt hơn trong việc tái sử dụng.
+IV. $emit với nhiều dữ liệu
+    - Có thể gửi object:
+        this.$emit('submit', {
+            name: this.name,
+            email: this.email
+        })
+    Cha:
+        methods: {
+            handleSubmit(data) {
+                console.log(data.name)
+                console.log(data.email)
+            }
+        }
+V. Props + $emit = luồng dữ liệu chuẩn
+    Cha quản lý data.
+    Con hiển thị và tương tác.
+    con muốn thay đổi phải khai báo bằng $emit
+VI. Slot - truyền nội dung HTML
+    - Props truyền data
+    - Slot truyền HTML/content
+    Ví dụ component con:
+        <template>
+            <div class="card">
+                <slot></slot>
+            </div>
+        </template>
+        Cha:
+        <my-card>
+            <h2>Xin chào</h2>
+            <p>Nội dung của tôi</p>
+        </my-card>
+        Kết quả:
+        <div class="card">
+            <h2>Xin chào</h2>
+            <p>Nội dung của tôi</p>
+        </div>
+    - Tại sao lại cần slot
+        - Giả sử em có component: <my-card></my-card> chịu trách nhiệm tạo khung, nhưng mỗi nơi muốn nội dung khác nhau thay vì tạo nhiều cái 1 lúc ta chỉ cần tạo 1 MyCard và cho phép truyền nội dung bằng <slot></slot>
+        - VD: Con <slot>
+                    Nội dung mặc định
+                </slot>
+            Cha <my-card></my-card>
+            -> Nội dung mặc định
+VII. Component kết hợp 
+    - với v-for
+        - Đây là pattern sẽ gặp liên tục.
+        - VD: <product-item
+                v-for="product in products"
+                :key="product.id"
+                :product="product"
+            ></product-item>
+        Lặp qua products, mỗi sp tạo 1 product-item, dùng product.id làm key và truyền product xuống component con.
+    - với v-if
+        - vd: <loading v-if="loading"></loading>
+            <product-list
+                v-else
+                :products="products"
+            ></product-list
+        Loading = true thì hiện Loading còn false thì hiện ProductList
+    - với v-model
+        - vd: <custom-input v-model="username"></custom-input>
+        đằng sau liên quan đến input event
+        Tức là component con có thể nhận giá trị từ cha và phát giá trị mới ngược lên
+
