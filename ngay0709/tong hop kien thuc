@@ -1,0 +1,120 @@
+- Cần nhớ sơ đồ này:
+    Vue 2 Component
+    │
+    ├── data
+    │     └── Dữ liệu
+    │
+    ├── methods
+    │     └── Hàm xử lý: hành động
+    │
+    ├── computed
+    │     └── Dữ liệu tính toán
+    │
+    ├── watch
+    │     └── Theo dõi thay đổi
+    │
+    └── template
+        │
+        ├── {{ }} -> hiển thị dữ liệu
+        ├── v-bind /: -> lấy giá trị từ JS 
+        ├── v-model -> binding 2 chiều và hay dùng với input, checkbox, radio, select, from
+        ├── v-if / v-else -> Render và điều kiện
+        ├── v-show -> có nhưng ẩn hiện không giống v-if: vẫn có element nhưng display: none
+        ├── v-for -> duyệt mảng và có :key(không nên để :key="index" nếu danh sách có thêm/xoá/sắp xếp)
+        └── v-on / @ -> bắt sự kiện của người dùng
+    - Những thứ cần nhớ các caveat của Vue 2: 
+    array[index] = value     → $set / splice
+    array.length = 0         → splice / gán mảng mới
+    object.newProp = value   → $set / khai báo trước
+- "Hiển thị dữ liệu?" -> {{ }}
+- "Click button?" → @click + methods
+- "Ẩn/hiện?" → v-if / v-show
+- "Lặp danh sách?" → v-for + :key
+- "Input 2 chiều?" → v-model
+- "Binding src, class, disabled?" → :
+- "Tính toán từ data?" → computed
+- watch - Phần quan trọng hôm nay
+    - Dùng để tính ra dữ liệu mới
+    - VD: 
+        data() {
+            return {
+                keyword: ''
+            }
+        },
+
+        watch: {
+            keyword(newValue, oldValue) {
+                console.log('Cũ:', oldValue)
+                console.log('Mới:', newValue)
+            }
+        }
+    Khi this.kaywword = 'vue' thì watch chạy
+    - watch có 2 tham số: newValue(Giá trị mới), oldValue(giá trị cũ)
+    - Khi nào dùng watch
+        - Khi thay đổi 1 dữ liệu kéo theo 1 hành động khác.
+- watch và computed rất hay nhầm
+    - computed: mục đích tính ra 1 giá trị mới và trả về 1 giá trị 
+    - VD: computed: {
+            fullName() {
+                return this.firstName + ' ' + this.lastName
+            }
+        }
+    - watch: mục đích làm 1 hành động khi dữ liệu thay đổi
+    - VD: watch: {
+            keyword(newValue) {
+                console.log('Keyword thay đổi:', newValue)
+            }
+        }
+    - computed = "Tôi cần tính ra cái gì?"
+    - watch = "Khi cái này thay đổi, tôi cần làm gì?"
+- methods -> gọi hàm 
+    - Hành động được gọi khi có sự kiện hoặc khi bạn chủ động gọi
+    - VD: methods: {
+            addProduct() {
+                // làm gì đó
+            }
+        }
+        <button @click="addProduct">
+            Thêm
+        </button>
+- Computed có cache
+    - Vue có thể cache kết quả cho đến khi dữ liệu phụ thuộc thay đổi
+- watch với object
+    - VD: data() {
+            return {
+                user: {
+                    name: 'Thủy',
+                    age: 20
+                }
+            }
+        }
+        Theo dõi user thì viết:
+        watch: {
+            user(newValue) {
+                console.log(newValue)
+            }
+        }
+        nhưng khi muốn thay đổi mà ghi this.user.name = 'Lan' thì sẽ không watch user không được kích hoạt, vì chỉ thay đổi bên trong object.Nếu muốn được thì dùng deep: true
+        watch: {
+            user: {
+                deep: true,
+                handler(newValue) {
+                    console.log('User thay đổi:', newValue)
+                }
+            }
+        }
+    - Không có deep: true thì this.user.name = 'Lan' không gây lỗi, nhưng watcher user mặc định sẽ không bắt được thay đổi bên trong object. Muốn theo dõi các thay đổi bên trong user thì dùng deep: true.
+    - Hiểu đơn giản deep: false (theo dõi thay đổi ở cấp object)
+        - deep: true (đi sâu vào bên trong object/array)
+- immediate: Khác watch là watch đợi data thay đổi song mới chạy còn immediate thì chạy luôn và nếu có thay đổi thì cũng tiếp tục chạy sự thay đổi đó.
+- Vue 2 Reactivity -  cực kỳ quan trọng
+
+    - KHÔNG reactive trong Vue 2 — UI không cập nhật
+        this.danhSach[0] = newValue 
+        this.danhSach.length = 0
+
+    - ĐÚNG
+        this.$set(this.danhSach, 0, newValue)
+        this.danhSach.splice(0, 1, newValue)
+        this.danhSach = []            // gán mảng mới thì OK
+
