@@ -1,0 +1,377 @@
+# Giai đoạn 2 — Components In-Depth
+Ngày 1 tao có 4 phần chính:
+    1. Component Registration
+    2. Props
+    3. $emit
+    4. v-model và .sync
+Ta sẽ học theo phân luồng
+    Component
+        ↓
+    Parent truyền dữ liệu
+        ↓
+    Props
+        ↓
+    Child xử lý
+        ↓
+    $emit
+        ↓
+    Parent cập nhật dữ liệu
+PHẦN I. COMPONENT là gì?
+    1. Component nghĩa là gì?
+        - hiểu đơn giản là 1 giao diện được đống gói thành 1 khối riêng, có HTML + CSS + JS riêng.
+        - vd:
+            src/
+            ├── App.vue
+            └── components/
+                ├── Header.vue
+                ├── ProductItem.vue
+                └── Footer.vue
+    2. Tại sao phải chia Component?
+        - Nếu viết tất cả vào 1 file thì rất dài nên cần chia ra các file nhỏ dễ quản lý và sửa.
+        - VD: giả sử viết 1 website có: header, menu, sidebar, danh sach sp, card sp, footer,... mà viết hết vô 1 file có đuôi .vue thì rất dài nên cần chia ra thành 
+        App.vue
+        │
+        ├── Header.vue
+        ├── Sidebar.vue
+        ├── ProductList.vue
+        ├── ProductItem.vue
+        └── Footer.vue
+        - Mỗi component chịu trách nhiệm 1 phần. Sau đó App sẽ ghép lại chúng để hiện lên giao diện người dùng.
+    3. Component có những phần nào?
+        <template>
+            <!-- HTML -->
+        </template>
+        <script>
+            // JavaScript
+        </script>
+        <style>
+            /* CSS */
+        </style>
+    4. Component Parent và Child là gì?
+        - Parent: Là component chứa component khác.
+        - Child: Là component được sử dụng bên trong component khác.
+        - VD: <App> là Parent
+                <Header /> là Child
+                <ProductList /> là Child
+                <Footer /> là Child
+            </App>
+PHẦN II. Component registration
+    - Registration có nghĩa là đăng kys component để Vue biết component đó tồn tại và có thể sử dụng nó trong template.
+    - có 3 bước để sd 1 component
+        Nhập component(IMPORT)
+            ↓
+        Đăng ký component(REGISTER)
+            ↓
+        Sử dụng component(USE)
+    - BƯỚC 1: IMPORT
+        - VD: src/
+              ├── App.vue
+              └── components/
+                    └── Header.vue
+            Trong App sẽ có: 
+            import Header from './components/Header.vue'
+        - Nghĩa là lấy component (thành phần) từ header từ file header.vue vào trong App.vue.
+    - BƯỚC 2: REGISTER
+        - sau khi import, phải đăng ký:
+        export default {
+            components: {
+                Header
+            }
+        }
+        - Nghĩa là component của header có thể được sử dụng trong template của App.vue.
+    - BƯỚC 3: USE
+        - Bây giờ mới sử dụng <Header />
+        - <script>
+            import Header from './components/Header.vue'
+
+            export default {
+                components: {
+                    Header
+                }
+            }
+        </script>
+
+        <template>
+            <div>
+                <Header /> PHẦN ĐƯỢC VIẾT Ở HEADER 
+            </div>
+        </template>
+    - TÓM LẠI PHẢI NHỚ
+        import Header
+            ↓
+        components: { Header }
+            ↓
+        <Header />
+    - Tại sao phải import
+        vì vue không thể tự biết <header /> là cái gì nên phải import sau đó components mới có nghĩa.
+    - Local Registration
+        - Đây là cách chúng ta sẽ dùng chủ yếu trong dự án.
+        - Vd:
+            <template>
+                <div>
+                    <Header />
+                    <ProductItem />
+                    <Footer />
+                </div>
+            </template>
+
+            <script>
+                import Header from './components/Header.vue'
+                import ProductItem from './components/ProductItem.vue'
+                import Footer from './components/Footer.vue'
+
+            export default {
+                name: 'App',
+
+                components: {
+                    Header,
+                    ProductItem,
+                    Footer
+                }
+            }
+            </script>            
+        - Đây gọi là: Local Registration — đăng ký component cục bộ.
+    - Global Registration
+        - Vue 2 còn có: Vue.component('Header', Header)
+        - Ví dụ:
+            import Vue from 'vue'
+            import Header from './components/Header.vue'
+            Vue.component('Header', Header)
+        - Sau đó nhiều component có thể dùng:
+                <Header />
+            mà không cần:
+            import Header from './components/Header.vue'
+            cho từng file.
+    - Khi nào dùng Global?
+        Ví dụ những component được sử dụng rất nhiều nơi:
+            BaseButton, BaseInput, BaseModal, BaseIcon: Có thể cân nhắc global.
+        Nhưng không nên biến tất cả thành global.
+        Ví dụ:
+            ProductDetail.vue
+            chỉ dùng ở một vài nơi thì local registration dễ hiểu hơn.
+        Trong dự án thực tế:
+            Local Registration
+                ↓
+            Dễ biết component đến từ đâu
+                ↓
+            Dễ đọc code
+                ↓
+            Dễ bảo trì
+    - Tên Component
+        - VD: trong file ProductItem.vue
+            có thể sd: <ProductItem />
+            hoặc: <product-item />
+        - Trong dự án thường gặp:
+            <ProductItem />
+            <ProductList />
+            <ProductDetail />
+            <UserProfile />
+            đây là PascalCase
+            - còn: 
+                <product-item />
+                <product-list />
+                <product-detail />
+                đây là kebab-case
+PHẦN III. TẠI SAO COMPONENT REDISTATION quan trọng?
+    - Vì đây là nền tảng để học Props và $emit.
+    - Sau này sẽ gặp:
+        App
+        │
+        └── ProductList
+            │
+            └── ProductItem
+    App sẽ có dữ liệu products: [...], nhưng ProductItem cần hiển thị 1 sp. Khi đó App sẽ truyền dữ liệu xuống ProductList bằng props song tiếp tục truyền bằng props từ ProductList xuống ProductItem
+    - QUY TẮC CỰC KỲ QUAN TRỌNG
+        Trong Vue 2:
+            Parent truyền dữ liệu xuống Child bằng Props.
+            Parent
+              │
+              │ props
+              ↓
+            Child
+        Ngược lại:
+            Child muốn báo cho Parent biết có chuyện xảy ra thì dùng $emit.
+            Parent
+              ↑
+              │ $emit
+              │
+            Child       
+Phần IV: ĐI SÂU VỀ PROPS
+    - Props là cách để component cha(Parent) truyền dữ liệu xuống cho Component con(Child).
+    - Quy tắc cốt lõi
+        - Dữ liệu đi một chiều từ Parent -> Child.
+        - Child chỉ được đọc (read-only) dữ liệu nhận từ Props, tuyệt đối không được tự ý thay đổi trực tiếp giá trị của props bên trong Child. Nếu muốn đổi, phải báo lên Parent bằng $emit.
+    - Tại sao phải dùng Props?
+        - Hãy nhớ danh sách đã phác thảo:
+            App (Parent) [có danh sách sản phẩm: products]
+            │
+            └── ProductList (Child)
+                │
+                └── ProductItem (Child cần hiển thị thông tin 1 sản phẩm cụ thể)
+        - Vấn đề: Component App.vue là nơi nắm giữ dữ liệu gốc (ví dụ: danh sách sản phẩm). Nhưng component con ProductItem.vue mới là nơi chịu trách nhiệm hiển thị ra giao diện.
+        - Giải pháp: Dùng Props để App "bơm" hoặc "truyền" dữ liệu sản phẩm đó xuống cho ProductItem hiển thị.
+    - Cách dùng từ chỉ khai báo <ProductItem /> giờ thành  <ProductItem :product="product" />(cha) và có thêm nội dung data. (con) các phần ghi nooij dung của data trc đó sẽ chuyển sang lấy dư liệu bằng {{}} và khai báo thêm ở script 
+    props: {
+        product: Object
+    }
+    - Tại sao không viết this.product? vì vue template tự hiểu product là dữ liệu của component.
+Phần V. TYPE, DEFAULT, REQUIRED
+    - type: quy định kiểu dữ liệu
+        props: {
+            product: Object
+        }
+    có nghĩa là ProductItem nhận một prop tên product, và prop đó nên là một Object.
+    - Có những type mà vue 2 thường dùng: 
+        String
+        Number
+        Boolean
+        Array
+        Object
+        Function
+    - default - giá trị mặc định
+        Giả sử Parent không truyền product:
+            <ProductItem />
+        thì ProductItem không có dữ liệu product.
+        Ta có thể cung cấp giá trị mặc định:
+            props: {
+                product: {
+                    type: Object,
+                    default: function () {
+                        return {
+                            name: 'Sản phẩm chưa có tên',
+                            price: 0
+                        }
+                    }
+                }
+            }
+        nếu không truyền vô ta vẫn có default để trả về để người nhìn biết.
+        - phải luôn nhớ có return nếu không sẽ vô tình chung 1 Object
+    - default với String/Number
+        Với kiểu đơn giản, có thể viết:
+            props: {
+                name: {
+                    type: String,
+                    default: 'Sản phẩm'
+                },
+
+                price: {
+                    type: Number,
+                    default: 0
+                }
+            }
+        Ở đây:
+            name không được truyền
+                ↓
+            'Sản phẩm'
+
+            price không được truyền
+                ↓
+            0
+    - required - bắt buộc phải truyền
+        Nếu bắt buộc phải truyền thì dùng required: true để nó bắt buộc phải truyền.
+    - Tóm lại mỗi cái sẽ có nhiệm vụ riêng
+        - type -> dữ liệu phải thuộc kiểu gì?
+        - default -> không truyền thì lấy giá trị nào?
+        - required -> có bắt buộc truyền không?
+PHẦN VI. One-way data flow
+    Đây là nguyên tắc bạn cần nhớ:
+              Props
+    Parent ───────────→ Child
+    Parent truyền xuống Child.
+    - không nên sửa đổi prop trực tiếp
+    - vd: <ProductItem :price="price" />
+        child nhận: 
+        props: {
+            price: Number
+        }
+        nếu muốn ghi this.price = 1000(không được)
+        vì price thuộc parent. Child chỉ nhận và sử dụng.
+    - Child muốn thay đổi dữ liệu thì dùng $emit.
+    -> $emit là gì?
+        + cú pháp: this.$emit('ten-su-kien')
+        hiểu đơn giản Child phát tín hiệu cho Parent biết rằng 1 việc gì đó vừa xảy ra.
+    - Parent lắng nghe $emit
+        nếu có <ProductItem
+                :product="product"
+                @discount="handleDiscount"
+            /> thì phần script phải có @discount="handleDiscount"
+    - $emit có thể truyền dữ liệu: có thể gửi kemf theo dữ liệu 
+        vd: this.$emit('discount', 15000000)
+    - Parent nhận dữ liệu như thế nào?
+        methods: {
+            handleDiscount(newPrice) {
+                this.product.price = newPrice
+            }
+        } nhận dữ liệu mới ở đây là newPrice
+        $event cũng là 1 cách khác để nhận dữ liệu nhưng nên dùng method hơn nó dễ đọc dễ bảo trì.
+    - $emit không thay đổi dữ liệu và  tên event phải khớp.
+    - Props + $emit = cặp đôi rất quan trọng
+        nhớ:
+                   PROPS
+        Parent ─────────→ Child
+                            │
+                            │ $emit
+                            ↓
+                          Parent
+        để props truyền dữ liệu xuống và $emit để thông báo ngược lên.
+PHẦN VII. v-model: dựa trên Props+$emit
+    - v-model trên Component trong Vue 2
+        <input v-model="name">
+    - Với input HTML, v-model giúp dữ liệu và ô input liên kết với nhau:
+        data.name
+            ↕
+        <input>
+    - Nhưng Vue 2 cũng cho phép:
+        <CustomInput v-model="name" />
+    Ở đây CustomInput là component con.
+    - Vue 2 thực chất biến v-model thành gì?
+        + Khi viết <CustomInput v-model="name" />
+        + Vue 2 hiểu: <CustomInput
+                        :value="name"
+                        @input="name = $event"
+                    />
+    - Nhớ công thức: Vue 2 Component v-model = prop value + event input
+    - Luồng hoàn chỉnh của v-model
+                     :value
+        App ─────────────────→ CustomInput
+        ↑                         │
+        │                         │ user nhập
+        │                         ↓
+        │                     $emit('input')
+        │                         │
+        └─────────────────────────┘
+                 @input
+    - tại sao phải là value và input
+        Vì mặc định trong Vue 2, component v-model sử dụng:         
+            Prop  → value
+            Event → input
+    - Có thể thay đổi value và input không? Vue 2 có cho phép cấu hình model.
+PHẦN VIII. .sync cũng là cơ chế giúp Child thông báo để Parent cập nhật dữ liệu.
+    -VD: data() {
+            return {
+                title: 'Sản phẩm'
+            }
+        }
+    và vue: <Child :title.sync="title" />
+    - .sync thực chất làm gì?
+        vue trên gần tương đương với:
+        <Child
+            :title="title"
+            @update:title="title = $event"
+        />
+    - Công thức cần nhớ: .sync = prop + event update:propName
+    - Luồng của .sync
+                    :title
+    Parent ─────────────────────→ Child
+    ↑                              │
+    │                              │
+    │                    $emit('update:title')
+    │                              │
+    └──────────────────────────────┘
+    - So sánh v-model và .sync
+        Đây là phần rất hay bị nhầm.
+                    v-model	                .sync
+    Prop mặc định	value	            Tên prop bất kỳ
+    Event mặc định	input	            update:propName
+    Ví dụ	    v-model="name"	        :title.sync="title"
+Child emit	$emit('input', value)	$emit('update:title', value)
