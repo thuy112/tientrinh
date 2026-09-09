@@ -2,6 +2,11 @@
   <div class="product-card">
     <header class="card-header">
       <slot name="header"></slot>
+      
+      <!-- [MỚI] Sử dụng $parent để đọc dữ liệu từ ProductList.vue -->
+      <p class="category-tag">
+         Danh mục: <strong>{{ $parent.categoryName }}</strong>
+      </p>
     </header>
 
     <div class="card-body">
@@ -10,6 +15,13 @@
 
     <footer class="card-footer">
       <slot name="footer"></slot>
+      
+      <!-- [MỚI] Sử dụng $root để gọi phương thức trực tiếp từ App.vue -->
+      <div class="root-actions">
+        <button class="btn-root" @click="$root.logSystemInfo()">
+          In log hệ thống ($root)
+        </button>
+      </div>
     </footer>
   </div>
 </template>
@@ -34,9 +46,22 @@ export default {
   padding-bottom: 8px;
   margin-bottom: 12px;
 }
+.category-tag {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 4px;
+}
 .card-footer {
   border-top: 1px solid #f0f0f0;
   padding-top: 8px;
   margin-top: 12px;
+}
+.root-actions {
+  margin-top: 8px;
+}
+.btn-root {
+  background-color: #78909c;
+  font-size: 0.8rem;
+  padding: 4px 8px;
 }
 </style>

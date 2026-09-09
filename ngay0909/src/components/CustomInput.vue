@@ -22,10 +22,9 @@ export default {
   },
   methods: {
     handleInput(event) {
-      // Phát ra sự kiện 'input' để v-model ở component cha cập nhật tự động
       this.$emit('input', event.target.value)
     },
-    // Hàm được gọi thông qua $refs từ App.vue
+    // Hàm gọi bằng $refs từ App.vue
     focusInput() {
       if (this.$refs.input) {
         this.$refs.input.focus()

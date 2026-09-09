@@ -124,9 +124,11 @@ PHẦN III. $refs, $parent, $root, provide/inject
         - VD
 
 # Tóm tắt tiêu chí cần kiểm tra khi em làm bài này:
-    1. v-model trên CustomInput: Hiểu cơ chế :value + @input và this.$emit('input', ...).
-    2. $refs: Gọi được phương thức focusInput() thông qua this.$refs.shopInput.
-    3. EventBus: Thực hiện đủ 2 bước EventBus.$emit ở App.vue và EventBus.$on ở ProductList.vue (kèm theo EventBus.$off ở beforeDestroy).
-    4. Scoped Slot: ProductList truyền product ra ngoài scope thông qua <slot :product="product">, và App.vue hứng bằng v-slot:default="slotProps" (hoặc slot-scope="slotProps" theo cú pháp cũ của Vue 2).
-    5. Named Slots: Định nghĩa slot header / footer trong ProductCard và truyền đúng thẻ vào slot đó ở App.vue.
-    6. provide / inject: App.vue khai báo provide, ProductList.vue nhận bằng inject: ['shopName'].
+1. Default SlotProductCard.vueKhai báo <slot></slot> ở phần body
+2. Named SlotProductCard.vueKhai báo <slot name="header"> và <slot name="footer">
+3. Scoped SlotProductList.vueVòng lặp v-for phát dữ liệu ra ngoài: <slot :product="product">
+4. EventBuseventBus.js + ProductList.vueApp.vue phát $emit, ProductList.vue nhận $on
+5. $refsCustomInput.vue + App.vueApp.vue gọi this.$refs.shopInput.focusInput()
+6. provide / injectApp.vue + ProductList.vueApp khai báo provide, ProductList nhận bằng inject: ['shopName']
+7. $parentProductCard.vueĐọc {{ $parent.categoryName }} từ ProductList.vue
+8. $rootProductCard.vueGọi phương thức $root.logSystemInfo() định nghĩa tại App.vue
