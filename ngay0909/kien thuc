@@ -1,0 +1,132 @@
+# Ngày 2 – Slots + EventBus + xử lý Edge Cases
+PHẦN I. SLOTS - PHẦN QUAN TRỌNG
+    - Đã học Parent -> Child bằng props: truyền data xuống
+    - nhưng khi Parent muốn truyền HTML/UI xuống thì props không tiện lúc này chúng ta phải dùng Slot.
+    - Vd: <template>                            <card>
+            <div class="card">                      <h2>Iphone 15</h2>
+                <slot></slot>                       <p>Giá: 20000000đ</p>
+            </div>                              </card>
+        </template>
+
+        <script>
+            export default {
+                name: 'Card'
+            }
+        </script>
+        lúc này vị trí <slot></slot> chính là đợi Child chờ Parent nhét nội dung vào.
+    - Default Slot
+        - slot sẽ truyền nooij dung từ Parent vào nếu Parent không có gì thì slot cũng không có nội dung.
+        - Vậy ta có thể để mặc định cho slot 
+            <slot>
+                Không có nội dung
+            </slot>
+            thì Parent không truyền gì sẽ hiện: Không có nội dung
+    - Named Slot - nhiều Slot
+        - VD: <template>
+                <div class="modal">
+                    <header>
+                        <slot name="header"></slot>
+                    </header>
+                    <main>
+                        <slot></slot>
+                    </main>
+                    <footer>
+                        <slot name="footer"></slot>
+                    </footer>
+                </div>
+            </template>
+            ở đây có 3 slot đó là: slot name="header"
+                                    slot mặc định
+                                    slot name="footer"
+        - Phần slot mặc định đó chính là default slot, còn 2 sllot còn lại là named slot.
+    - Scoped Slot 
+        - Bình thường:
+            Parent ──data──> Child
+            với Props.
+        - Nhưng Scoped Slot cho phép:
+            Child ──data──> Slot ──> Parent
+        - Tức là:
+            Child cung cấp dữ liệu cho Parent sử dụng trong nội dung Slot.
+    - Tại sao cần Scoped Slot?
+         vì child quản lý data còn parent quyết định UI(nó muốn quyết định giao diện hiển thị)
+PHẦN II. EventBus
+    - Đã biết:
+        Parent
+          ↓ props
+        Child
+          ↑ $emit
+        Parent
+    - Nhưng nếu ta có:Header
+                    ProductList
+                    ProductItem
+                    Footer
+        và Header muốn gửi dữ liệu cho Footer thì sao vì 2 component này không phải Parent-Child trực tiếp.
+    - Vậy nếu ta cố nhét kiểu: Header → ProductItem → App → Footer
+        thì sẽ không được nhưng EventBus giải quyết được trường hợp đó.
+    - Hoạt động: 
+        - Tạo 1 file enventBus.js và file này sẽ chuyên dùng để phát và nhận event.
+            import Vue from 'vue'
+            export default new Vue()
+        - VD: 
+            Component A gửi
+                import EventBus from './eventBus'
+                EventBus.$emit('product-added', product)
+            Component B nhận:
+                import EventBus from './eventBus'
+                EventBus.$on('product-added', function (product) {
+                    console.log(product)
+                })
+            Luồng:
+                Component A
+                    │
+                    │ $emit
+                    ↓
+                EventBus
+                    │
+                    │ $on
+                    ↓
+                Component B
+PHẦN III. $refs, $parent, $root, provide/inject
+    1. $refs
+        - Bình thường Parent truyền dữ liệu:
+            Parent → Props → Child
+        -> Nhưng đôi khi Parent muốn truy cập trực tiếp Child.
+        - VD: 
+            + Child: methods: {
+                        focus() {
+                            this.$refs.input.focus()
+                        }
+                    }
+            + Parent: <CustomInput ref="input" />
+            + Parent có thể gọi method của Child:
+                this.$refs.input.focus()
+        - Nhưng nhớ: $refs là truy cập trực tiếp. Không nên dùng $refs để thay thế Props và $emit trong giao tiếp dữ liệu thông thường.
+    2. $parent
+        - Trong Child this.$parent trỏ tới component cha trực tiếp.
+    3. $root
+        - this.$root trỏ tới Vue instance gốc.
+        - Trong ứng dụng:
+            App
+            ├── Header
+            ├── ProductList
+            │   ├── ProductItem
+            │   └── ProductItem
+            └── Footer
+            $root có thể đi tới root Vue instance.
+        - Nhưng cả $parent và $root không nên lạm dụng.
+            Trong code thực tế, ưu tiên:
+                Props
+                $emit
+                EventBus
+                Vuex (khi project dùng state management)
+    4. provide / inject
+        - Truyền data xuống component sâu.
+        - VD
+
+# Tóm tắt tiêu chí cần kiểm tra khi em làm bài này:
+    1. v-model trên CustomInput: Hiểu cơ chế :value + @input và this.$emit('input', ...).
+    2. $refs: Gọi được phương thức focusInput() thông qua this.$refs.shopInput.
+    3. EventBus: Thực hiện đủ 2 bước EventBus.$emit ở App.vue và EventBus.$on ở ProductList.vue (kèm theo EventBus.$off ở beforeDestroy).
+    4. Scoped Slot: ProductList truyền product ra ngoài scope thông qua <slot :product="product">, và App.vue hứng bằng v-slot:default="slotProps" (hoặc slot-scope="slotProps" theo cú pháp cũ của Vue 2).
+    5. Named Slots: Định nghĩa slot header / footer trong ProductCard và truyền đúng thẻ vào slot đó ở App.vue.
+    6. provide / inject: App.vue khai báo provide, ProductList.vue nhận bằng inject: ['shopName'].
