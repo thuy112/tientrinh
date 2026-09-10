@@ -1,0 +1,163 @@
+
+<!--DAY 3 — COMPONENTS IN-DEPTH
+    - Hôm nay mình học 4 phần chính:
+        Dynamic Components
+        <keep-alive>
+        Async Components / Lazy Loading
+        Debug + Edge Cases
+PHẦN I. Dynamic Components
+    - Nó cho phép Vue thay đổi component đang hiển thị dựa vào 1 biến.
+    - bình thường muốn hiển thị component thì Vue sẽ hiển thị <ProductList />
+    -> nếu muốn đổi sang <ProductForm /> thì thường phải dùng:
+        <ProductList v-if="currentTab === 'list'" />
+        <ProductForm v-else />
+    - Nhưng Vue có 1 cách khác: <component :is="currentComponent" />
+    - VD: Giả sử có 3 component: ProductList.vue, ProductFrom.vue, ProductDetail.vue 
+        - Trong App.vue có:
+            <template>
+                <div>
+                    <button @click="currentComponent = 'ProductList'">
+                        Danh sách
+                    </button>
+
+                    <button @click="currentComponent = 'ProductForm'">
+                        Thêm sản phẩm
+                    </button>
+
+                    <button @click="currentComponent = 'ProductDetail'">
+                        Chi tiết
+                    </button>
+
+                    <component :is="currentComponent" />
+                </div>
+            </template>
+            <script>
+                ...
+                data() {
+                    return {
+                        currentComponent: 'ProductList'
+                    }
+                }
+            </script>
+        - Khi currentComponent: 'ProductList' chạy thì Vue sẽ nhìn vào <component :is="currentComponent" /> và hiểu nó phải hiển thị ProductList và nó sẽ xuất hiện.
+        - Khi bấm thêm sản phẩm currentComponent đổi: 'ProductList'->'ProductForm' và Vue tự chuyển đổi mà không cần v-if - v-else
+    - Ta có thể dùng component đã import. Trong Vue 2 cách rõ ràng va dễ học nhất là: components: {
+                        ProductList,
+                        ProductForm,
+                        ProductDetail
+                    } sau đó currentComponent: 'ProductList' và <component :is="currentComponent" />
+    - Luồng hoạt động:
+        Người dùng click
+                ↓
+        currentComponent thay đổi
+                ↓
+        <component :is="currentComponent">
+                ↓
+        Vue kiểm tra giá trị
+                ↓
+        ProductList / ProductForm / ProductDetail
+                ↓
+        Component tương ứng được render
+    - So sánh với v-if
+        - Cách cũ:
+            <ProductList v-if="currentTab === 'list'" />
+            <ProductForm v-if="currentTab === 'form'" />
+            <ProductDetail v-if="currentTab === 'detail'" />
+        - thay vì dùng nhiều v-if như thế giờ ta có thể <component :is="currentComponent" /> sẽ hữu ích hơn khi có nhiều component cần chuyển đổi.
+PHẦN II. <keep-alive>
+    - Dùng để giữ lại component đã được tạo khi quay lại, trạng tháu của nó vẫn còn.
+    - VD: Như đã biết <component :is="currentComponent" /> có thể chuyển từ ProductList sang ProductForm, nếu quay ngược lại component cũ sẽ bị phá huỷ vậy <keep-alive> sẽ state/dữ liệu bên trong component có thể bị mất.
+        - Nếu không có <keep-alive> thì khi nhập 1 dữ liệu nào đó ở ProductForm và chuyển sang dạng ProductList và quay lại ProductForm và sẽ bị destroy và nó sẽ quay lại và tạo ProductForm mới và trả về rỗng.
+    - Cách sửa chữa: chỉ cần bọc <keep-alive> cho <component :is="currentComponent" />
+    - Tóm lại: 
+        Không có keep-alive
+            ProductForm
+                ↓
+            Đóng
+                ↓
+            Xóa component
+                ↓
+            Mở lại
+                ↓
+            Tạo component mới
+        Có keep-alive
+            ProductForm
+                ↓
+            Tạm cất đi
+                ↓
+            ProductList
+                ↓
+            Quay lại
+                ↓
+            Lấy ProductForm cũ ra
+    - Lifecycle có gì khác?
+        - Với component bình thường: created -> mounted -> destroyed
+        - Khi dùng với <keep-alive>, khi chuyển component nó có thêm:
+            activated
+            deactivated
+        - VD: export default {
+                activated() {
+                    console.log('Component được kích hoạt')
+                },
+                deactivated() {
+                    console.log('Component tạm thời bị ẩn')
+                }
+            }
+            activated(): chạy khi component được đưa trở lại hoạt động.
+            deactivated(): Chạy khi component bị chuyển khỏi màn hình nhưng chưa bị destroy.
+    - Khi nào nên dùng keep-alive: khi những giao diện có nhiều kiểu như khi đang ở bước 1 sang bước 2 chỉnh dữ liệu mà khi quay lại bước 1 vẫn còn dữ liệu.
+    - Nhưng không nên lúc nào cũng dùng vì khi dùng nhiều thì component rất nhiều và nặng dãn đến tốn bộ nhớ.
+PHẦN III. Async Components / Lazy Loading
+    - Lazy Loading là gì?
+        Bình thường hay viết:
+            import ProductList from './components/ProductList.vue'
+            import ProductForm from './components/ProductForm.vue'
+            import ProductDetail from './components/ProductDetail.vue'
+        Nếu khi nhiều component mà không cần import ngay thì Lazy Loading nghĩa là: Chỉ tải code của component khi component đó thực sự cần được sử dụng.
+    - Cách viết trong Vue 2:
+        - Thay vì viết: import ProductDetail from './components/ProductDetail.vue'
+        - Ta có thể viết: const ProductDetail = () => import('./components/ProductDetail.vue')
+    - Hiểu từng phần
+        const ProductDetail = () => import('./components/ProductDetail.vue')
+            - const ProductDetail: Đặt tên cho component.
+            - () =>: Đây là một arrow function.
+            - import(...): Đây là dynamic import.
+            -> Nó nói với hệ thống: "Đừng tải file này ngay. Khi cần thì hãy import nó."
+    - Async Component là gì?
+        - Hiểu là component khi nào cần mới tải 
+    - Khi nào nên dùng Lazy Loading: khi ứng dụng lớn và người dùng chỉ muốn vào 1 cái nào đó mà k cần thiết phải tải ngay toàn bộ.
+    - Một điều em cần nhớ
+        Lazy Loading không phải làm component chạy nhanh hơn về mọi mặt.
+    - Nó giúp: Giảm lượng code phải tải ban đầu.
+            Đổi lại, lần đầu người dùng mở component lazy-loaded có thể cần chờ tải chunk đó.
+            Nên nó thường hữu ích với component/trang ít dùng hoặc tương đối lớn.
+PHẦN IV. Debug + Edge Cases trong Vue 2
+    1. DEBUG VUE
+        - Debug là tìm nguyên nhân khiến code không chạy đúng và sửa nó.
+        - Các lỗi: 
+            Lỗi 1 — Property or method ... is not defined: không khớp 1 cái gì đấy
+            Lỗi 2 — Quên khai báo props
+            Lỗi 3 — Avoid mutating a prop directly: Child không đc tự do thay đổi Props
+            Lỗi 4 — Unknown custom element: chưa import
+            Lỗi 5 — $refs là undefined: gọi $refs.input có thể chưa tồn tại.
+    2. EDGE CASES
+        - $refs (Truy cập DOM hoặc Component con):
+            + Bản chất: Giúp tạo một liên kết trực tiếp tới một phần tử DOM hoặc một instance của component con ngay sau khi component đã mount (mounted).
+            + Cơ chế bên trong: Vue gán đối tượng DOM/Component instance vào tập hợp this.$refs của component cha. Vì nó phụ thuộc vào DOM, $refs không có tính chất reactive (không tự động kích hoạt render lại khi thay đổi).
+            + Ứng dụng: Focus ô input (this.$refs.input.focus()), cuộn trang, gọi trực tiếp method của component con.
+        - $parent (Truy cập Component cha trực tiếp):
+            + Bản chất: Trỏ thẳng lên instance của component cha gần nhất chứa nó.
+            + Cơ chế bên trong: Mỗi component instance khi được tạo ra đều giữ một tham chiếu đến parent của nó trong cây component.
+            + Ứng dụng: Gọi hàm hoặc lấy data của cha mà không cần gửi $emit. Lưu ý: Rất dễ làm code bị "thắt chặt" (tight coupling), gây khó bảo trì.
+        - $root (Truy cập Instance gốc - App):
+            + Bản chất: Trỏ thẳng lên Vue instance cao nhất (thường là instance khai báo trong main.js hoặc App.vue).
+            + Cơ chế bên trong: Vue duyệt ngược từ component hiện tại lên đỉnh cây component để lấy tham chiếu gốc. Tất cả các component con đều chia sẻ chung một $root.
+            + Ứng dụng: Lưu các trạng thái toàn cục nhỏ (như theme, language) hoặc gọi các hàm global mà không muốn dùng Vuex/Pinia.
+        - Dependency Injection (provide / inject)
+            + Giải quyết vấn đề Prop Drilling (phải truyền prop qua quá nhiều cấp trung gian dù các cấp đó không dùng đến).
+            + Cơ chế bên trong:
+                Component cha khai báo provide: Cung cấp một tập hợp dữ liệu/hàm.
+                Any component cháu/chắt ở tầng sâu khai báo inject: Nhận trực tiếp dữ liệu đó mà không cần thông qua các cấp cha trung gian.
+            + Lưu ý quan trọng về tính Reactive trong Vue 2:
+                Mặc định, nếu bạn provide một giá trị nguyên thủy (Primitive Value như String, Number), nó không tự động cập nhật (non-reactive) khi component cha thay đổi.
+                Để biến nó thành reactive, bạn cần truyền một Object hoặc truyền một computed getter.
