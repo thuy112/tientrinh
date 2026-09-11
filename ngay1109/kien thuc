@@ -1,0 +1,185 @@
+# Giai đoạn 3 — Tooling: SFC, build, deploy
+
+I. SFC .vue
+    1. Cấu trúc SFC
+        <template>
+            <!-- giao diện -->
+        </template>
+
+        <script>
+        export default {
+            // logic
+        }
+        </script>
+
+        <style scoped>
+            /* CSS */
+        </style>
+    2. Vue - 1 root 
+        <!-- ❌ Sai -->
+        <template>
+            <h1>Hello</h1>
+            <p>Vue 2</p>
+        </template>
+        <!-- ✅ Đúng -->
+        <template>
+            <div>
+                <h1>Hello</h1>
+                <p>Vue 2</p>
+            </div>
+        </template>
+    3. data() phải là function
+        data() {
+            return {
+                name: 'Thủy'
+            }
+        }
+    4. Scoped
+        <style scoped>
+        .product {
+            color: red;
+        }
+        </style>
+        -> CSS chỉ áp dụng trong component(thành phần) đó.
+    5. Deep selector
+        ::v-deep .el-button {
+            ...
+        }
+II. Cấu trúc thư mục
+    - Đây là phần quan trọng khi thực tập.
+    src/
+    ├── main.js: Khởi đầu app
+    ├── App.vue: component gốc
+    ├── components/: component dùng lại
+    ├── views/: các màn hình/trang
+    ├── router/: URL -> component
+    ├── store/: state dùng chung, thường Vuex
+    ├── api/: gọi API
+    ├── assets/: ảnh, front, css
+    ├── utils/: hàm tiện ích
+    └── mixins/: logic dùng chung
+    - Khi nhận dự án lạ:
+        Mở main.js
+            ↓
+        Xem Vue.use(...)
+            ↓
+        Có router không?
+            ↓
+        Có Vuex không?
+            ↓
+        Có thư viện UI không?
+            ↓
+        App.vue
+            ↓
+        router/
+        store/
+        components/
+        views/
+III. main.js
+    import Vue from 'vue'
+    import App from './App.vue'
+    import router from './router'
+    import store from './store'
+
+    Vue.config.productionTip = false: Tắt các dòng cảnh báo/gợi ý sản xuất của Vue trong console.log khi app khởi chạy. Giúp Console sạch hơn khi dev.
+
+    new Vue({
+        router,
+        store,
+        render: h => h(App)
+    }).$mount('#app')
+    -> import là nạp chính xác những gì file xuất ra (export) và những gì bạn yêu cầu.
+    new Vue()... là Khởi tạo Instance gốc và Gắn vào DOM.
+    - Đặc biệt:
+        new Vue({
+            render: h => h(App)
+        }).$mount('#app')
+        → tạo Vue instance gốc và gắn App.vue vào HTML.
+IV. package.json + npm scripts 
+    {
+        "name": "vue-project",// tên project
+        "version": "0.0.0",// version của project
+
+        "scripts": {
+        "dev": "vite",// phần chạy câu npm run dev để hiện ra đường dẫn trình duyệt.
+        "build": "vite build",// phần này chạy npm run build, vite sẽ lấy source code của bạn để rồi build thành bản production.
+        "preview": "vite preview --port 4173"// chạy lệnh npm run preview nó dùng để xem thử bản đã build trong dist/
+        -> thông thường quy trình sẽ npm run build song rồi đến npm run preview nhưng preview không phải lệnh code hàng ngày. khi phát triển thì dùng npm run dev.
+
+    },
+        "dependencies": {// thư viện 
+        "vue": "^2.7.7" // ^ cho phép npm chọn các bản tương thích trong phạm vi phù hợp, thay vì khoá tuyệt đối đúng 2.7.7
+    },
+        - Đây là quá trình phát triển/build project
+        "devDependencies": {
+        "@vitejs/plugin-legacy": "^2.0.0",-> hỗ trợ tạo output tương ứng hơn với các trình duyệt cũ.
+        "@vitejs/plugin-vue2": "^1.1.2", -> plugin giupws Vite hiểu và xử lý Vue 2 SFC
+        "terser": "^5.14.2",-> công cụ làm code production nhỏ gọn hơn
+        "vite": "^3.0.2" -> công cụ build + development server
+    }
+}quan trọng nếu bạn nhận project từ người khác thường có package.json nhưng không có node_modules thì chỉ cần chạy npm install sau đó mới có thể chạy npm run dev.
+
+V. .env + API + alias
+    - VD: .env
+        .env.development
+        .env.production
+    Vue CLI thường dùng: VUE_APP_API_URL=... sau đóod process.env.VUE_APP_API_URL
+    - Cần nhớ không phải biến môi trường nào cũng tự động được đưa vào frontend.
+    - Alias @ thì phải hiểu nó là src
+
+VI. Proxy
+    - Đây là phần bạn chỉ cần hiểu bản chất.
+        Frontend: localhost:8080
+        Backend: localhost:3000
+    - Browser có thể chặn request vì khác origin. → CORS.
+    - Trong môi trường development có thể dùng proxy:
+        Frontend
+            ↓
+        /api
+            ↓
+        Dev Server Proxy
+            ↓
+        Backend
+VII. Build
+    - trong project Vue 2 của 
+        npm install
+    - sau đó 
+        npm run build
+    - nếu thành công sẽ tạo ra:
+        dist/
+        ├── css/
+        ├── js/
+        ├── img/
+        └── index.html
+    - Tại sao cần build?
+        - Vì browser/server production không chạy trực tiếp source project theo cách development.
+        - Build biến source thành bản đã được đóng gói tối ưu để deploy.
+VIII. Dev vs Production
+    Development: npm run server
+    - Mục đích: code -> sửa -> test -> debug
+    - có warning, source dễ debug, vue devtools, hot reload
+    Production: nom run build
+    - Mục đich: source code -> build -> dist -> deploy
+    - code thường được: bundle, minify, optimify
+IX. Style Guide A + B
+    - chỉ cần nắm các nguyên tắc quan trọng như:
+        Tên component rõ ràng
+                ↓
+        props rõ ràng
+                ↓
+        key đúng khi v-for
+                ↓
+        không mutate props
+                ↓
+        component nhỏ, dễ tái sử dụng
+                ↓
+        template dễ đọc
+- tại sao data trong component phải là function?
+    Vì một component có thể được dùng nhiều lần. Nếu data là object, mọi instance chia sẻ chung một object — sửa ở chỗ này ảnh hưởng chỗ kia. Function đảm bảo mỗi instance có object riêng.
+- Muốn đè CSS của thư viện UI bên trong component có scoped thì làm sao?
+    Dùng deep selector ::v-deep .class-cua-thu-vien { } (bản cũ: /deep/ hoặc >>>), hoặc đặt rule đó trong một khối style không có scoped.
+
+- [ ]  Tìm file cấu hình: `vue.config.js` (Vue CLI) hoặc cấu hình webpack thủ công: là file vite.config.js
+- [ ]  Tìm các file `.env`, `.env.development`, `.env.production` — biến môi trường phải có tiền tố `VUE_APP_`: là file vite.config.js
+
+- Hiểu mục devServer.proxy trong vue.config.js — cách dự án tránh CORS khi dev: số cổng (Port) mà Server Backend của bạn đang chạy ở máy local. đường dẫn API ở Backend

@@ -1,0 +1,56 @@
+1. Đọc src/main.js từ trên xuống, liệt kê mọi thứ được Vue.use() và tra xem đó là thư viện gì?
+    Kết quả: File không có bất kỳ dòng lệnh Vue.use() nào.
+    Kết luận: Dự án hiện tại ở mức khởi tạo tối giản (Minimal Setup), chưa đăng ký/sử dụng thêm plugin hoặc thư viện mở rộng nào cấp toàn cục (Global).
+    - Để phòng trường hợp dự án phát triển thêm:
+        + Vue.use(VueRouter): vue-router: quản lý định tuyến(chuyển trang SPA)
+        + Vue.use(Vuex): vuex: quản lý dữ liệu/ trạng thái tập trung
+        + Vue.use(ElementUI): element-ui: Bộ thư viện giao diện UI (Button, Form, Table...)
+        + Vue.use(Antd): ant-design-vue: Bộ thư viện giao diện Ant Design cho Vue
+        + Vue.use(VueI18n): vue-i18n: Xử lý đa ngôn ngữ (Tiếng Việt, Tiếng Anh...)
+        + Vue.use(Vuelidate): vuelidate: Kiểm tra tính hợp lệ của dữ liệu ô nhập (Form Validation)
+        + Vue.use(VueAxios, axios): vue-axios: Tích hợp thư viện gọi API (Axios) vào hằng số this.$http
+2. Vẽ sơ đồ thư mục dự án của bạn và ghi chú mỗi thư mục dùng làm gì?
+    vue-project/
+    ├── .vscode/               # Cấu hình riêng cho trình soạn thảo VS Code
+    ├── dist/                  # (Tự động sinh ra khi chạy npm run build) Chứa mã nguồn đã đóng gói để đưa lên server
+    │   ├── assets/            # CSS, JS, hình ảnh đã được tối ưu & nén nhỏ
+    │   ├── favicon.ico        # Icon trang web cho bản build
+    │   └── index.html         # File HTML chính duy nhất để chạy ứng dụng thật
+    ├── node_modules/          # Thư viện ngoài được cài đặt qua NPM (không sửa code trong này)
+    ├── public/                # Chứa các tài nguyên tĩnh giữ nguyên khi build
+    │   └── favicon.ico        # Icon hiển thị trên tab trình duyệt
+    ├── src/                   # MÃ NGUỒN CHÍNH (Nơi bạn lập trình mỗi ngày)
+    │   ├── assets/            # Chứa các file tài nguyên tĩnh (CSS, hình ảnh, SVG...)
+    │   │   ├── base.css       # CSS cơ bản / reset style
+    │   │   ├── logo.svg       # File ảnh logo dạng SVG
+    │   │   └── main.css       # CSS chính toàn cục
+    │   ├── components/        # Chứa các thành phần giao diện nhỏ, tái sử dụng nhiều lần
+    │   │   ├── icons/         # Chứa các component icon SVG
+    │   │   ├── HelloWorld.vue # Component hiển thị lời chào mẫu
+    │   │   ├── TheWelcome.vue # Component nội dung trang chào mừng
+    │   │   └── WelcomeItem.vue# Component con để dựng từng dòng nội dung
+    │   ├── App.vue            # Component gốc (Root Component) chứa toàn bộ ứng dụng
+    │   └── main.js            # Entry point (file chạy đầu tiên) khởi tạo ứng dụng Vue
+    ├── .gitignore             # Khai báo các file/thư mục KHÔNG đưa lên Git (như node_modules, dist)
+    ├── index.html             # Mẫu file HTML gốc chứa <div id="app"></div> để Vue gắn giao diện vào
+    ├── package.json           # Khai báo thông tin dự án, danh sách thư viện và các lệnh npm run
+    ├── package-lock.json      # Khóa chính xác phiên bản các thư viện phụ thuộc
+    ├── README.md              # File hướng    dẫn chạy và cài đặt dự án
+    └── vite.config.js         # File cấu hình công cụ build Vite
+- Tóm tắt công dụng chính:
+    1. src/: Thư mục quan trọng nhất chứa toàn bộ mã nguồn ứng dụng do lập trình viên viết.
+        + src/components/: Chứa các component giao diện nhỏ có thể tái sử dụng.
+        + src/assets/: Chứa CSS, font chữ, hình ảnh dùng trong các component.
+        + src/App.vue: Component lớn nhất bao bọc tất cả các component khác.
+        + src/main.js: Điểm khởi đầu của ứng dụng, nạp Vue và các thư viện liên quan.
+    2. public/: Chứa tài nguyên tĩnh nguyên bản, không bị Vite/Webpack xử lý hay nén lại.
+    3. dist/: Thư mục kết quả sau khi build (npm run build), dùng để tải lên hosting/server thực tế.
+    4. node_modules/: Thư viện do NPM quản lý.
+    5. package.json: File quản lý danh sách thư viện và tập hợp các lệnh chạy lệnh (dev, build, preview).
+3. Tìm chỗ cấu hình URL API (thường ở .env hoặc src/api/)?
+    - Dự án đang cấu hình URL API thông qua cơ chế Proxy trong file vite.config.js tại trường server.proxy.
+    - URL API Backend Target: http://localhost:8000
+    - Prefix nhận diện: Các request bắt đầu bằng /api sẽ tự động được chuyển tiếp sang Server Backend.
+
+
+
