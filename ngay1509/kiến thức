@@ -1,0 +1,203 @@
+Giai đoạn 4 — Scaling Up: Vue Router 3 + Vuex 3
+
+PHẦN I. Ôn lại kiến thức buổi 1
+    1. $route và $router
+        - $route: this.route: thông tin của URL hiện tại
+        - $router: this.router: dùng để điều khiển việc chuyển trang
+    2. Dynamic Route
+        - Trong Router:
+            {
+                path: '/san-pham/:id',
+                component: ProductDetail
+            }
+            :id là tham số động.
+        - Ví dụ:
+            /san-pham/1
+            /san-pham/2
+            /san-pham/100
+        - đều dùng: ProductDetail.vue
+        - Lấy ID: const id = this.$route.params.id
+    3. Query
+        - VD: this.$route.query.page
+        Query:/san-pham?page=2 -> 2
+    4. push() và router-link
+        - Điều hướng bằng HTML: 
+            <router-link to="/san-pham">
+                Sản phẩm
+            </router-link>
+        - Điều hướng bằng Js:
+            this.$router.push('/san-pham')
+    5. Navigation Guard
+        - router.beforeEach((to, from, next) => {...})
+        - Trước khi chuyển sang trang mới, Router hỏi: có được phép không?
+        - Nền tảng để sau này phân quyền/ bảo vệ route
+PHẦN II. Vuex 3 là gì?
+    1. Vuex là gì?
+        - là nới lưu trữ và quản lý dữ liệu dùng chung cho toàn bộ ứng dụng Vue.
+PHẦN III. 4 khái niệm quan trọng của Vuex
+        - Có 4 từ phải nhớ: state, getters, mutations, actions.
+        - hình dung:
+                    Vuex
+                    │
+            ┌───────┼────────┐
+            ↓       ↓        ↓
+            state   getters  mutations
+                                ↑
+                            actions
+    1. State
+        - là dữ liệu được lưu trong Store.
+        - K hi nào dùng State: khi dữ liệu cần được nhiều component sử dụng chung.
+        - VD: const store = new Vuex.Store({
+                state: {
+                    count: 0,
+                    username: 'Thủy'
+                }
+            })
+            component có thể lấy: this.$store.state.count
+    2. Getters
+        - dữ liệu được tính toán từ State.
+        - VD: state: {
+                products: [
+                    { name: 'Tai nghe', price: 450000 },
+                    { name: 'Bàn phím', price: 890000 }
+                ]
+            }
+            - muốn biết có bao nhiêu sản phẩm thì:
+                getters: {
+                    productCount(state) {
+                        return state.products.length
+                    }
+                }       
+            - Component sẽ lấy: this.$store.getters.productCount -> 2
+    3. Mutations
+        - là nơi thay đổi state
+        - vd: mutations: {
+                increment(state) {
+                    state.count++
+                }
+            }
+        - Không nên để component trực tiếp:
+            this.$store.state.count++
+        - Thay vào đó:
+            this.$store.commit('increment')
+    4. Actions
+        - xử lý logic bất đồng bộ, thường dùng để gọi API, sau đó commit mutation.
+        - VD: actions: {
+                incrementAsync({ commit }) {
+                    setTimeout(() => {
+                        commit('increment')
+                    }, 1000)
+                }
+            }
+        - Component: this.$store.dispatch('incrementAsync')
+PHẦN IV. commit và dispatch
+    1. commit
+        - gọi: this.$store.commit('increment')
+        -> gọi mutation: commit → mutation
+    2. dispatch
+        - gọi: this.$store.dispatch('incrementAsync')
+        - gọi action: dispatch → action
+        
+* // Luồng chuẩn
+component  --dispatch-->  action  --commit-->  mutation  -->  state  -->  UI
+                            |
+                        gọi API
+
+- Lý thuyết 4 Helper thần thánh trong Vuex 3
+- Thay vì viết dài dòng:
+    - this.$store.state.user $\rightarrow$ dùng mapState
+    - this.$store.getters.cartTotal $\rightarrow$ dùng mapGetters
+    - this.$store.commit('SET_USER') $\rightarrow$ dùng mapMutations
+    - this.$store.dispatch('fetchData') $\rightarrow$ dùng mapActions
+- Vị trí đặt Helper:
+    - mapState và mapGetters đặt trong computed (vì chúng trả về dữ liệu/giá trị)
+    - mapMutations và mapActions đặt trong methods (vì chúng là hàm/hành động).
+
+# BÀI TỔNG HỢP TẤT CẢ KIẾN THỨC 2 BUỔI
+- Cấu trúc:
+    ngay1509/
+    ├── src/
+    │   ├── api/
+    │   │   └── request.js         # Khởi tạo Axios & Interceptors
+    │   ├── router/
+    │   │   └── index.js           # Vue Router 3 + Navigation Guard
+    │   ├── store/
+    │   │   ├── modules/
+    │   │   │   └── product.js     # Namespaced Module Vuex 3
+    │   │   └── index.js           # Root Store gom các modules
+    │   ├── views/
+    │   │   ├── Home.vue           # Trang chủ (Programmatic Navigation)
+    │   │   ├── ProductList.vue    # Danh sách SP (mapGetters, mapActions, Query ?page=)
+    │   │   ├── ProductDetail.vue  # Chi tiết SP (Dynamic Route :id)
+    │   │   ├── Login.vue          # Trang đăng nhập (Lưu token)
+    │   │   └── Account.vue        # Trang bảo vệ (Requires Auth)
+    │   ├── App.vue                # Layout chính + bẫy reactivity (:key)
+    │   └── main.js                # Khởi tạo Vue root instance
+    ├── index.html
+    ├── package.json
+    └── vite.config.js
+
+Chọn một màn hình có dữ liệu** trong dự án thật và truy vết toàn bộ đường đi, viết ra giấy:
+
+1. URL nào? → tìm trong `router/index.js`
+2. Route đó trỏ tới component nào trong `views/`?
+3. Component gọi API ở hook nào (`created` hay `mounted`)?
+4. Nó `dispatch` action nào? Action đó gọi hàm API nào?
+5. Sau khi có dữ liệu, `commit` mutation nào? State nào được ghi?
+6. Component lấy lại state đó bằng gì (`mapState` / `mapGetters`)?
+7. Render ra chỗ nào trong template?
+
+TRẢ LỜI:
+1. URL: / (Trang chủ)
+    - file tìm: src/router/index.js
+    - Khai báo trong Router: { path: '/', component: Home }
+2. Route đó trỏ tới component: src/views/Home.vue
+3. Lấy dữ liệu lần đầu: gọi ở hook created() khi component vừa khởi tạo.
+    created() {
+        if (this.productList.length === 0) {
+            this.fetchProducts()
+        }
+    }
+    - Khi bấm nút thêm ngay: gọi trực tiếp qua sự kiện submit form
+        @submit.prevent="handleCreateProduct"
+4. - Tải dữ liệu: 
+        Kích hoạt:
+            this.fetchProducts() $\rightarrow$ dispatch product/fetchProducts $\rightarrow$ gọi request.get('/products') trong src/api/request.js.
+    - Thêm mới: 
+        Kích hoạt:
+            this.addProduct(...) $\rightarrow$ dispatch product/addProduct (được map vào methods nhờ ...mapActions('product', ['addProduct'])).
+5. Khi lấy danh sách: Commit mutation SET_PRODUCTS $\rightarrow$ ghi đè mảng dữ liệu vào state.list trong src/store/modules/product.js.     
+    - Khi thêm sản phẩm mới: Action addProduct thực hiện: commit('ADD_PRODUCT', productWithId)
+    -> Mutation ADD_PRODUCT ghi dữ liệu bằng cách chèn sản phẩm mới lên đầu mảng: state.list.unshift(newProduct).
+6. Đặt trong mục computed của src/views/Home.vue sử dụng helper mapGetters:JavaScriptcomputed: 
+    {
+        ...mapGetters('product', ['productList', 'isLoading', 'totalProducts'])
+    }
+    - (Truy ngược về getters.productList trong src/store/modules/product.js để đọc state.list).
+7. Vị trí 1 (Số lượng): Thẻ <strong>{{ totalProducts }}</strong> tự động tăng số lượng.
+    - Vị trí 2 (Danh sách Card): Thẻ v-for trong <template> của Home.vue:
+        <div v-for="sp in productList" :key="sp.id">
+            <h5>{{ sp.name }}</h5>
+            <p>{{ sp.price }}</p>
+        </div>
+- Sơ đồ tóm tắt luồng đi: 
+    [URL: /]
+        └─> [router/index.js] ──> Trỏ tới [views/Home.vue]
+                                        │
+                ┌───────────────────────┴───────────────────────┐
+                ▼ (created)                                     ▼ (Nút Thêm Ngay)
+            dispatch('product/fetchProducts')               dispatch('product/addProduct')
+                │                                               │
+            gọi API request.get()                           tạo id mới + payload
+                │                                               │
+        commit('SET_PRODUCTS')                         commit('ADD_PRODUCT')
+                │                                               │
+                └───────────────────────┬───────────────────────┘
+                                        ▼
+                            [Ghi vào state.list]
+                                        │
+                            mapGetters('product', ['productList'])
+                                        │
+                                        ▼
+                            [Render danh sách <div> ra UI]
+
