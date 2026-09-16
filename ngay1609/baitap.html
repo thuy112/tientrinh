@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Thực Hành Vue 2: Tách Biệt 5.1 đến 5.5</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; background: #f4f6f9; }
+    .box { border: 1px solid #ddd; padding: 15px; margin-bottom: 25px; border-radius: 8px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    h2 { margin-top: 0; color: #42b983; border-bottom: 2px solid #42b983; padding-bottom: 5px; }
+    .tieu-de-dong { color: #2c3e50; cursor: pointer; -webkit-user-select: none; user-select: none; }
+    .tieu-de-dong:hover { text-decoration: underline; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+</head>
+<body>
+
+     <!--BÀI 5.1: MIXIN (THỨ TỰ VÀ XUNG ĐỘT)-->
+<div id="app-5-1" class="box">
+  <h2>Bài 5.1: Mixin (Thứ tự và xung đột)</h2>
+  <p>data.nhan hiện tại: <strong>{{ nhan }}</strong></p>
+  <button @click="xuLyClickMixin">{{ chaoText }}</button>
+</div>
+
+<script>
+// Global Mixin (Mở comment dòng dưới để kiểm tra):
+// Vue.mixin({ created() { console.log("0. [5.1] created của Vue.mixin toàn cục") } })
+
+const mixinA = {
+  data() { return { nhan: "từ MIXIN A" } },
+  methods: { chao() { return "chào từ MIXIN A" } },
+  created() { console.log("1. [5.1] created của MIXIN A"); }
+}
+
+const mixinB = {
+  data() { return { nhan: "từ MIXIN B" } },
+  methods: { chao() { return "chào từ MIXIN B" } },
+  created() { console.log("2. [5.1] created của MIXIN B"); }
+}
+
+new Vue({
+  el: "#app-5-1",
+  mixins: [mixinA, mixinB],
+  data() {
+    return {
+      // Bỏ comment dòng dưới để Component đè Mixin B:
+      // nhan: "từ COMPONENT",
+      chaoText: ""
+    }
+  },
+  created() {
+    console.log("3. [5.1] created của COMPONENT");
+    this.chaoText = this.chao();
+  },
+  methods: {
+    // Bỏ comment method này để Component đè Mixin B:
+    // chao() { return "chào từ COMPONENT" },
+    xuLyClickMixin() { alert(this.chaoText); }
+  }
+});
+</script>
+
+
+    <!--BÀI 5.2: FILTERS-->
+<div id="app-5-2" class="box">
+  <h2>Bài 5.2: Filters</h2>
+  <p>1. Filter toàn cục dinhDangTien: <strong>{{ tien | dinhDangTien }}</strong></p>
+  <p>2. Filter cục bộ rutGon(15): <strong>{{ vanBan | rutGon(15) }}</strong></p>
+  <p>3. Chuỗi filter (bo | hoa): <strong>"{{ '   vue js   ' | bo | hoa }}"</strong></p>
+  <p>4. Kiểm tra this trong filter (Xem console log): <strong>{{ vanBan | testThis }}</strong></p>
+</div>
+
+<script>
+// Filter toàn cục
+Vue.filter('dinhDangTien', function (val) {
+  if (!val && val !== 0) return '0 đ'
+  return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' đ'
+});
+
+new Vue({
+  el: "#app-5-2",
+  data() {
+    return {
+      tien: 1200000,
+      vanBan: 'Lập trình VueJS cơ bản đến nâng cao'
+    }
+  },
+  filters: {
+    rutGon(val, doDai = 10) {
+      if (!val) return ''
+      return val.length > doDai ? val.slice(0, doDai) + '...' : val
+    },
+    bo(val) { return val ? val.trim() : '' },
+    hoa(val) { return val ? val.toUpperCase() : '' },
+    testThis(val) {
+      console.log('-> [5.2] Giá trị của this trong filter:', this);
+      return val;
+    }
+  }
+});
+</script>
+
+
+     <!--BÀI 5.3: CUSTOM DIRECTIVES-->
+<div id="app-5-3" class="box">
+  <h2>Bài 5.3: Custom Directives</h2>
+  <p>
+    1. v-focus (inserted): 
+    <input type="text" v-focus placeholder="Tự động focus khi load">
+  </p>
+  <p>
+    2. v-mau (bind + update): 
+    <span v-mau="mauHienTai">Văn bản đổi màu tự động</span>
+    <button @click="doiMau">Đổi màu</button>
+  </p>
+  <p>
+    3. v-quyen: 
+    <button v-quyen="'ADMIN'">Nút chỉ ADMIN thấy (Sẽ bị ẩn)</button>
+    <button v-quyen="'EDITOR'">Nút EDITOR thấy (Hiện)</button>
+  </p>
+  <p>
+    4. v-test-vue3 (Thử hook Vue 3 'mounted'): 
+    <span v-test-vue3>Kiểm tra console xem hook mounted có chạy không</span>
+  </p>
+</div>
+
+<script>
+Vue.directive('focus', {
+  bind(el) { console.log("-> [5.3] v-focus: Hook bind chạy (chưa vào DOM)"); },
+  inserted(el) {
+    console.log("-> [5.3] v-focus: Hook inserted chạy (đã vào DOM)");
+    el.focus();
+  }
+});
+
+Vue.directive('mau', {
+  bind(el, binding) { el.style.color = binding.value; },
+  update(el, binding) {
+    console.log("-> [5.3] v-mau: Hook update chạy -> Màu mới:", binding.value);
+    el.style.color = binding.value;
+  }
+});
+
+Vue.directive('quyen', {
+  inserted(el, binding) {
+    const quyenHienTai = ['USER', 'EDITOR'];
+    if (!quyenHienTai.includes(binding.value)) {
+      console.log(`-> [5.3] v-quyen: Thẻ đòi quyền '${binding.value}' bị XÓA khỏi DOM`);
+      el.parentNode && el.parentNode.removeChild(el);
+    } else {
+      console.log(`-> [5.3] v-quyen: Thẻ đòi quyền '${binding.value}' ĐƯỢC GIỮ LẠI`);
+    }
+  }
+});
+
+Vue.directive('test-vue3', {
+  mounted(el) {
+    console.log("-> [5.3] Dòng này KHÔNG BAO GIỜ IN vì Vue 2 bỏ qua hook 'mounted'");
+  }
+});
+
+new Vue({
+  el: "#app-5-3",
+  data() {
+    return {
+      mauHienTai: 'red'
+    }
+  },
+  methods: {
+    doiMau() {
+      this.mauHienTai = this.mauHienTai === 'red' ? 'blue' : 'red';
+    }
+  }
+});
+</script>
+
+
+     <!--BÀI 5.4: PLUGIN & VUE.PROTOTYPE-->
+<div id="app-5-4" class="box">
+  <h2>Bài 5.4: Plugin & Vue.prototype</h2>
+  <button @click="guiThongBao">Gửi thông báo qua this.$thongBao</button>
+  <br><br>
+  <the-thong-bao>Nội dung này nằm trong component toàn cục do Plugin đăng ký</the-thong-bao>
+</div>
+
+<script>
+const ThongBaoPlugin = {
+  install(Vue, tuyChon = {}) {
+    console.log("-> [5.4] Plugin đang được install...");
+    const tienTo = tuyChon.tienTo || '[LỖI]: ';
+    
+    // 1. Gắn vào prototype
+    Vue.prototype.$thongBao = function (noiDung) { alert(tienTo + noiDung); }
+    
+    // 2. Đăng ký component toàn cục
+    Vue.component('the-thong-bao', {
+      template: '<div style="border: 1px dashed red; padding: 10px; background: #fff5f5;"><slot></slot></div>'
+    })
+  }
+}
+
+// Đăng ký Plugin
+Vue.use(ThongBaoPlugin, { tienTo: '[HỆ THỐNG]: ' });
+
+new Vue({
+  el: "#app-5-4",
+  methods: {
+    guiThongBao() {
+      this.$thongBao('Thao tác thành công!');
+    }
+  }
+});
+</script>
+
+
+     <!--BÀI 5.5: RENDER FUNCTION-->
+<div id="app-5-5" class="box">
+  <h2>Bài 5.5: Render Function</h2>
+  <p>Click vào các tiêu đề bên dưới để test event handler trong render function:</p>
+  <o-tieu-de :muc="1">Tiêu đề H1 (Render Function)</o-tieu-de>
+  <o-tieu-de :muc="3">Tiêu đề H3 (Render Function)</o-tieu-de>
+  
+  <hr>
+  <p>Viết lại bằng Dynamic Component Template (`&lt;component :is&gt;`):</p>
+  <o-tieu-de-template :muc="2">Tiêu đề H2 (Template thường)</o-tieu-de-template>
+</div>
+
+<script>
+// 1. Dùng Render Function
+Vue.component('o-tieu-de', {
+  props: ['muc'],
+  render(h) {
+    console.log(`-> [5.5] Render Function tạo thẻ <h${this.muc}>`);
+    return h(
+      'h' + this.muc,
+      {
+        class: 'tieu-de-dong',
+        on: { click: this.xuLyClick }
+      },
+      this.$slots.default
+    );
+  },
+  methods: {
+    xuLyClick() { alert('Bạn vừa click vào Render Function H' + this.muc); }
+  }
+});
+
+// 2. Viết lại bằng Template dùng <component :is="">
+Vue.component('o-tieu-de-template', {
+  props: ['muc'],
+  template: `
+    <component :is="'h' + muc" class="tieu-de-dong" @click="xuLyClick">
+      <slot></slot>
+    </component>
+  `,
+  methods: {
+    xuLyClick() { alert('Bạn vừa click vào Template H' + this.muc); }
+  }
+});
+
+new Vue({
+  el: "#app-5-5"
+});
+</script>
+
+</body>
+</html>

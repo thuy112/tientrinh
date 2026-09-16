@@ -1,0 +1,303 @@
+Giai đoạn 5 — Reusability: mixins, directives, filters, render function
+I. Mixin 
+    1.Mixin là gì?
+        - là lấy 1 nhóm logic dùng chung rồi cho nhiều component sử dụng
+        - Vd: export default {
+                data() {
+                    return {
+                        trang: 1
+                    }
+                },
+                methods: {
+                    doiTrang(t) {
+                        this.trang = t
+                    }
+                }
+            }
+        - Nếu nhiều trang đều cần logic phân trang thì không muốn copy đi copy lại. Ta sẽ làm:
+            + phanTrang.js:
+                export default {
+                    data() {
+                        return {
+                            trang: 1,
+                            soDong: 20,
+                            tongSo: 0
+                        }
+                    },
+                    computed: {
+                        tongSoTrang() {
+                            return Math.ceil(this.tongSo / this.soDong)
+                        }
+                    },
+                    methods: {
+                        doiTrang(t) {
+                            this.trang = t
+                            this.taiLai()
+                        }
+                    }
+                }
+            + các thành phần sẽ ghi:
+                <script>
+                import phanTrang from '@/mixins/phanTrang'
+                export default {
+                    mixins: [phanTrang]
+                }
+                </script>
+            + sau đó các thành phần tự có:
+                this.trang
+                this.soDong
+                this.tongSo
+                this.tongSoTrang
+                this.doiTrang()
+            -> mặc đù thành phần không viết những thứ đó. Đây chính là điểm khiến mixin dễ gây bối rối khi maintain.
+    2. Điều quan trọng: Mixin không phải import object bình thường.
+        - Vd: mixins: [phanTrang] -> không có nghĩa là this.phanTrang.trang. Mà Vue trộn các option của mixin vào component.
+        -> nên viết this.trang
+    3. Nếu trùng tên thì sao?
+        - Vd: + mixin:
+            export default {
+                data() {
+                    return {
+                        nhan: 'từ MIXIN'
+                    }
+                },
+                methods: {
+                    chao() {
+                        return 'chào từ MIXIN'
+                    }
+                }
+            }
+            + Component:
+                export default {
+                    mixins: [mixinA],
+                    data() {
+                        return {
+                            nhan: 'từ COMPONENT'
+                        }
+                    },
+                    methods: {
+                        chao() {
+                            return 'chào từ COMPONENT'
+                        }
+                    }
+                }
+            -> kết quả đều nhận từ component
+        - Tức là component thắng mixin đối với data, methos, computed,...
+    4. Nhưng created() lại khác
+        - VD: + Mixin:
+                export default {
+                    created() {
+                        console.log('Mixin')
+                    }
+                }
+            + Component: 
+                export default {
+                    mixins: [mixinA],
+                    created() {
+                        console.log('Component')
+                    }
+                }
+            -> không phải component ghi đè Mixin mà cả 2 đều chạy.
+        - Thứ tự chạy của created khi có mixins: [A, B]
+            1. created của Vue.mixin() toàn cục
+            2. created của mixin A
+            3. created của mixin B
+            4. created của chính component
+    5. Tại sao Mixin nguy hiểm
+        - VD: bạn nhìn <button @click="taiLai"> nhưng khi nhìn trong thành phần không có taiLai. Lúc này kiểm tra đến mixins và thấy có taiLai.
+    6. 1 số lỗi dễ gặp
+        - Mixin không có taiLai(), nó giả định component sủ dụng nó có taiLai(). Nến component quên viết:
+            → chạy đến taiLai() → không tồn tại → lỗi
+    7. Vue.mixin() 
+        - Có 1 loại:
+            Vue.mixin({
+                created() {
+                    console.log('chạy ở mọi component')
+                }
+            })
+            cái này khác mixins: [mixinA]
+        - mixins: []: chỉ component đó sử dụng.
+        - Vue.mixin(): áp dụng cho mọi component trong ứng dụng
+        - Nếu dự án có Vue.mixin(), đọc nó thật kỹ trước khi làm bất cứ việc gì khác. Nó áp lên mọi component trong ứng dụng, kể cả component của Element UI hay Vuetify. Đây là nguồn của những hành vi "không thể giải thích" trải khắp app.
+    8. Qui trình truy vết khi gặp biến hoặc hàm không rõ từ đâu ra — làm theo đúng thứ tự này:
+        1. Tìm trong chính file `.vue` (`data`, `computed`, `methods`, `props`)
+        2. Xem mục `mixins: [...]` ở đầu component — đọc từng mixin
+        3. Xem các dòng `...mapState`, `...mapGetters`, `...mapActions` (Vuex)
+        4. Xem `Vue.mixin()` toàn cục trong `main.js`
+        5. Xem `Vue.prototype.$abc = ...` trong `main.js`
+        6. Xem các plugin được `Vue.use()` — chúng có thể gắn thêm vào prototype
+        Tên bắt đầu bằng `$` thì nhảy thẳng xuống bước 5 và 6.
+II. Filter
+    1.Filter có tham số
+        {{ten | rutGon(10) }}
+        - filter: 
+            filters: {
+                rutGon(value, doDai) {
+                    return value.length > doDai
+                        ? value.slice(0, doDai) + '...'
+                        : value
+                }
+            }
+        - Điểm cần nhớ: Tham số đầu tiên luôn là giá trị đứng trước dấu |
+    2. Filter nối nhiều cái
+        {{ten | bo | hoa }}
+        - sẽ chạy từ ten -> bo -> hoa -> kết quả
+        - tức là sẽ chạy từ trái sang phải.
+    3. Filter khồn có this
+        - Filter không phải component method.
+        - Nó phải là hàm thuần tuý — chỉ biến đổi tham số đầu vào thành kết quả. Cần truy cập dữ liệu component thì phải dùng computed hoặc methods thay vì filter.
+III. Custom Directive
+    - Nhận diện: <input v-focus>
+    - Nếu v-focus không phải diẻctive mặc định của Vue -> có khả năng là custom directive.
+    - VD:
+        Vue.directive('focus', {
+            inserted(el) {
+                el.focus()
+            }
+        })
+        sau đó <input v-focus> 
+        khi element được đưa và DOM: Vue -> v-focus -> inserted() -> el.focus()
+    1. 5 hook của Directive Vue 2
+        - Bạn chỉ cần nhận diện:
+            bind      → element được bind nhưng chưa vào DOM
+            inserted  → đã vào DOM
+            update    → component cập nhật
+            componentUpdated → cây con cập nhật xong
+            unbind    → directive bị gỡ
+    2. Cực kỳ chú ý Vue 2 vs Vue 3
+        - Vue 2:
+            bind
+            inserted
+            update
+            componentUpdated
+            unbind
+        - Vue 3:
+            beforeMount → element gắn directive nhưng CHƯA vào DOM (thay cho bind)
+            mounted → ĐÃ vào DOM (thay cho inserted)
+            updated → ĐÃ cập nhật xong DOM (thay cho componentUpdated)
+            unmounted → directive ĐÃ bị gỡ — CHỖ DỌN DẸP (thay cho unbind)
+IV. Plugin + Vue.prototype
+    - Đây là nguyên nhân của những thứ kiểu:
+        this.$http
+        this.$đinhDangNgay
+        this.$thongBao
+    mà component không import.
+    - Vd: trong .js có: Vue.prototype.$http = axios
+    sau đó mọi component có thể: this.$http.get(...) mà không cần import axios from 'axios'
+    1. Plugin
+        - có thể đóng gói nhiều thứ
+            // Cách có cấu trúc — viết thành plugin
+                const ThongBaoPlugin = {
+                    install(Vue, tuyChon) {
+                        Vue.prototype.$thongBao = function (loi) { /* ... */ }
+                        Vue.component('o-thong-bao', OThongBao)     // đăng ký component toàn cục
+                        Vue.directive('tooltip', { /* ... */ })     // đăng ký directive toàn cục
+                        Vue.mixin({ /* ... */ })                    // cẩn thận với cái này
+                    }
+                }
+
+                Vue.use(ThongBaoPlugin, { tienTo: '[HỆ THỐNG] ' })
+        - 1 dòng Vue.use() có thể thêm hàng chục component toàn cục. đó là lý do dùng được các thẻ như el-table, v-btn mà không import gì trong file .vue. Khi gặp một thẻ lạ không tìm thấy định nghĩa, kiểm tra các Vue.use() trong main.js.
+V. Render Function
+    - Phần này không cần viết thành thạo chỉ cần nhìn thấy:
+        render(h) {
+            return h(...)
+        } là nhận ra đây là render Function của Vue 2
+    - VD: render(h) {
+            return h(
+                'h2',
+                {
+                    class: 'tieu-de',
+                     on: {
+                        click: this.xuLy
+                    }
+                },
+                this.$slots.default
+            )
+        }
+
+
+GIẢI THÍCH PHẦN BÀI TẬP (baitap.html)
+Bài 1:
+    1. Dự đoán kết quả (Trường hợp chưa sửa code)
+        - data.nhan hiện gì? Hiện "từ MIXIN B".
+        - chao() trả về gì? Trả về "chào từ MIXIN B".
+        - Giải thích: Component chính không định nghĩa nhan và chao(). Do đó, Vue sẽ lấy từ Mixin. Vì khai báo mixins: [mixinA, mixinB], Mixin B đứng sau nên đã ghi đè hoàn toàn Mixin A. (Lưu ý: Nếu Component tự khai báo nhan hoặc chao(), Component mới là bên thắng cuối cùng).
+    2. Xác nhận thứ tự log trong Console
+        - Console sẽ in ra đúng 3 dòng theo thứ tự Mixin chạy trước, Component chạy sau:
+        1. created của MIXIN A
+        2. created của MIXIN B
+        3. created của COMPONENT
+    3. Khai báo mixins: [mixinA, mixinB], cái nào thắng?
+        - mixinB thắng mixinA.
+        - Nguyên tắc: Khi gộp các mixins, Vue duyệt mảng từ trái qua phải. Mixin nào đứng vị trí sau trong mảng (mixinB) sẽ đè lên các mixin đứng trước nó (mixinA) nếu trùng tên key.
+    4. Giải thích khi bỏ comment Vue.mixin() toàn cục
+        - Hiện tượng: Dòng log 0. created của Vue.mixin toàn cục xuất hiện nhiều hơn 1 lần (thường là 2 hoặc nhiều hơn tùy quy mô app).
+        - Giải thích: Vue.mixin() áp dụng hook created lên mọi Vue instance được tạo ra trong ứng dụng. Ngoại trừ Root Instance (new Vue()), các component con, component nội bộ của thư viện, hoặc các instance phụ do Vue khởi tạo ngầm đều sẽ kích hoạt hook này.
+    5. Tiêu chí hoàn thành: Giải thích cơ chế Option Merging
+    - Vì sao data / methods bị ghi đè?
+        data và methods là trạng thái (state) và hành vi độc bản của component tại một thời điểm. Tại một key (ví dụ nhan hoặc chao()), Javascript Object không thể chứa 2 giá trị cùng lúc. Vue ưu tiên Component vì Component là nơi định nghĩa cụ thể nhất, còn Mixin chỉ là phần dùng chung mang tính mặc định.
+    - Vì sao Lifecycle Hooks lại chạy cả hai?
+        Lifecycle Hooks là chuỗi sự kiện nối tiếp theo thời gian (events), không phải dữ liệu trạng thái. Vue sẽ gom tất cả hàm hook cùng tên từ Mixin và Component vào một mảng (Array of functions) rồi lần lượt gọi từng hàm. Mixin chạy trước để chuẩn bị nền tảng/dữ liệu khởi tạo, tạo tiền đề cho Hook của Component chạy ngay sau đó.
+
+Bài 2 — Filters
+    - Filter toàn cục `dinhDangTien`:Nhận giá trị số và chuyển đổi thành định dạng tiền tệ Việt Nam VNĐ (thêm dấu chấm phân cách hàng nghìn và hậu tố "đ").
+    - Filter cục bộ `rutGon`:Nhận tham số độ dài mong muốn. Nếu chuỗi dài hơn ngưỡng này, nó sẽ cắt chuỗi và thêm dấu `...`.
+    - Chuỗi filter `| bo | hoa`:Chạy tuần tự từ trái sang phải. `bo` cắt bỏ khoảng trắng thừa hai đầu (`trim()`), sau đó truyền kết quả cho `hoa` biến thành chữ hoa (`toUpperCase()`).
+    - `this` bên trong Filter:Ngữ cảnh `this` trong filter trả về `undefined` (hoặc `Window` ở non-strict mode). Điều này xác nhận Filter trong Vue là Pure Function, hoàn toàn tách biệt và không truy cập được vào state hay method của Component Instance.
+
+Bài 3 — Custom Directive
+    - Nếu dùng `bind`:Hàm `.focus()` thất bạivì ở giai đoạn này thẻ HTML mới được tạo trên bộ nhớ, chưa được chèn (insert) thực sự vào cây DOM của trình duyệt.
+    - Dùng `inserted`:Hàm `.focus()` thành côngvì phần tử đã hiện diện chính thức trong DOM.
+
+
+    - `v-mau` (`bind` + `update`):Hook `bind` chỉ kích hoạt 1 lần duy nhất khi directive vừa gắn vào thẻ. Nếu thiếu `update`, khi state `mauHienTai` thay đổi, giao diện sẽ bị "trơ" và không đổi màu.
+    - `v-quyen`:Lấy danh sách quyền của người dùng hiện tại so sánh với `binding.value`. Nếu không đủ quyền, directive sẽ can thiệp DOM trực tiếp bằng `el.parentNode.removeChild(el)` để xóa hẳn phần tử.
+    - Thử hook của Vue 3 (`mounted`):Vue 2 hoàn toàn im lặngvà bỏ qua directive này vì nó chỉ nhận diện các hook chuẩn của Vue 2 (`bind`, `inserted`, `update`, `componentUpdated`, `unbind`). Việc nhìn thấy nó "im lặng" giúp bạn tránh mất thời gian vô ích khi lỡ gõ nhầm tên hook của Vue 3 vào dự án Vue 2.
+
+ Bài 4 — Plugi 
+    - Khi chưa install Plugin:Gọi `this.$thongBao()` sẽ bắn ra lỗi JavaScript: `TypeError: this.$thongBao is not a function` (hoặc `undefined`) vì thuộc tính này chưa tồn tại trong instance.
+    - Hoàn thiện `install()` 
+        - Sử dụng `Vue.prototype.$thongBao = function(...)` để tiêm (inject) phương thức vào toàn bộ các Component.
+        - Truy cập `tuyChon.tienTo` được truyền từ `Vue.use(Plugin, options)` để cấu hình tiền tố thông báo linh hoạt.
+
+    - Sử dụng không cần `import`:Bất kỳ Component nào trong ứng dụng cũng có thể gọi `this.$thongBao(...)` trực tiếp nhờ kế thừa từ `Vue.prototype`.
+    - Component toàn cục:Khai báo `Vue.component('the-thong-bao', ...)` bên trong `install()` giúp đăng ký thẻ `<the-thong-bao>` trên toàn bộ hệ thống mà không cần khai báo vào mục `components: {}` ở từng file.
+
+ Bài 5 — Render Functio 
+    - Giải thích 3 tham số của `h(...)` (hay `createElement`) 
+        1. Tham số 1 (String | Object | Function):Tên thẻ HTML (như `'h1'`, `'div'`) hoặc một Component Object.
+        2. Tham số 2 (Object - Optional):Data Object chứa thuộc tính, class CSS, style, props, hoặc event listeners (như `{ class: '...', on: { click: ... } }`).
+        3. Tham số 3 (String | Array):Các phần tử con (Children/Slots) bên trong thẻ đó.
+
+    - So sánh Render Function và `<component :is>` 
+        - Dùng `<component :is="'h' + muc">` ngắn gọn, dễ đọc và phù hợp với template chuẩn.
+        - Dùng `render()` cho khả năng tùy biến mạnh mẽ hơn bằng thuần JavaScript khi cấu trúc DOM quá phức tạp hoặc thay đổi liên tục.
+
+    - Thêm `@click` bằng `{ on: { click: ... } }`:Trong Render Function Data Object, trường `on` đóng vai trò thay thế cho các directive `@event` (hoặc `v-on:event`) trong template thường. Nó nhận vào một Object chứa tên sự kiện và hàm xử lý tương ứng.
+
+SƠ ĐỒ BÀI TỔNG HỢP 
+                main.js
+                   │
+        ┌──────────┴──────────┐
+        │                     │
+     Filter                Directive
+   uppercase                 v-focus
+        │                     │
+        └──────────┬──────────┘
+                   │
+                 App.vue
+                   │
+             danh sách products
+                   │
+              props :product
+                   ↓
+          ProductCard.vue
+                   │
+          ┌────────┴────────┐
+          │                 │
+       Mixin              $emit
+   priceMixin              add
+          │                 │
+  formatPrice()             ↓
+                     App.vue nhận sự kiện
