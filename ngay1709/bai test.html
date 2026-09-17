@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vue 2 - Plugin</title>
+</head>
+
+<body>
+<div id="app">
+  <h2>{{ title }}</h2>
+  <button @click="showMessage">
+    Bấm vào đây
+  </button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+
+<script>
+const MyPlugin = {
+  install(Vue, options) {
+    console.log("Plugin đã chạy")
+    Vue.prototype.$thongBao = function(message) {
+      alert(options.prefix + ": " + message)
+    }
+  }
+}
+
+Vue.use(MyPlugin, {
+  prefix: "Thông báo"
+})
+
+new Vue({
+  el: "#app",
+
+  data() {
+    return {
+      title: "Test Plugin Vue 2"
+    }
+  },
+
+  methods: {
+    showMessage() {
+      this.$thongBao("Xin chào!")
+    }
+  }
+})
+</script>
+</body>
+</html>

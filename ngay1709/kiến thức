@@ -1,0 +1,281 @@
+Giai đoạn 5 — Reusability: mixins, directives, filters, render function
+Phần I. PLUGIN + Vue.prototype
+    1. Vue.prototype là gì
+        - Dùng để thêm các phương thức, dữ liệu hoặc thư viện toàn cục (global) vào mọi component mà không cần phải import thủ cồn từng nơi.
+        - Vd: 1 Vue component có: this.ten, this.gia, this.luu()
+        Những thứ này thường xuất phát từ chính component
+    2. Tại sao phải có dấu $?
+        - vd: bạn tự thêm:
+            Vue.prototype.$thongBao = function() {
+                alert("Hello")
+            } thì component dùng:
+                this.$thongBao()
+            dấu $ không phải cú pháp bắt buộc của JavaScript.
+        - Nó là 1 quy ước đặt tên để báo cho người đọc:
+            Cái này có thể không phải dữ liệu/method bình thường của component
+        - VD: this.ten, this.gia,... thường là logic của conmponent. 
+            còn: this.$http, this.$router, this.$store,... -> nên nghĩ ngay nó được khai báo ở đâu? -> Vue.prototype, Plugin, Vue.use()?
+    3. Plugin là gì?
+        - là cách đóng gói 1 nhóm chức năng dùng chung để cài vào Vue.
+        - VD: nếu k dùng Plugin:
+            methods: {
+                thongBao() {
+                    alert("Xin chào")
+                }
+            } chỉ component đó có this.thongBao()
+            - Ta có thể đưa chức năng đó ra ngoài.
+                vd: Vue.prototype.$thongBao = function(message) {
+                        alert(message)
+                    } Đây là ý tưởng nền tảng của Plugin.
+    4. install()
+        - Plugin Vue 2 thường có:
+            const MyPlugin = {
+                install(Vue, options) {
+                }
+            } sau đó Vue.use(MyPlugin)
+        - Có thể hình dung:
+            Vue.use(MyPlugin)
+                    ↓
+            Vue tìm install()
+                    ↓
+            MyPlugin.install(Vue, options)
+                    ↓
+            Plugin thực hiện việc cấu hình
+    5. options để làm gì?
+        - VD: Vue.use(MyPlugin, {
+                prefix: "[APP]"
+            })
+            - Plugin:
+                const MyPlugin = {
+                    install(Vue, options) {
+                        console.log(options.prefix)
+                    }
+                } -> kq: [APP]
+            - vậy là truyền cấu hình vào Plugin
+        - Luồng:
+            Vue.use()
+                ↓
+            MyPlugin
+                ↓
+            install(Vue, options)
+                            ↓
+                    options.prefix
+        6. Plugin không chỉ có prototype
+            - install() có thể dùng để đăng ký nhiều thứ:
+                const MyPlugin = {
+                    install(Vue, options) {
+                        Vue.prototype.$thongBao = ... // gắn vào prototype
+                        Vue.component(...) // đăng ký compontent toàn cục
+                        Vue.directive(...) // đăng ký directive toàn cục
+                        Vue.mixin(...) // đăng ký Mixin toàn cục
+                    }
+                }
+        7. 1 Plugin hoàn chỉnh nên đọc ntn?
+            - VD: 
+                const MyPlugin = {
+                    install(Vue, options) {
+
+                        Vue.prototype.$thongBao = function(message) {
+                            alert(options.prefix + message)
+                        }
+
+                        Vue.component("o-thong-bao", {
+                            template: `
+                             <div>
+                                Đây là component toàn cục
+                             </div>
+                            `
+                        })
+
+                        Vue.directive("demo", {
+                            inserted(el) {
+                                el.style.color = "red"
+                            }
+                        })
+                    }
+                }
+        
+        - Luồng Plugin
+                    MyPlugin
+                     │
+              install(Vue, options)
+                     │
+       ┌─────────────┼─────────────┐
+       ↓             ↓             ↓
+Vue.prototype   Vue.component   Vue.directive
+       ↓             ↓             ↓
+ this.$xxx       <xxx>          v-xxx
+
+Phần II. Vue.use() cần hiểu gì?
+    - Không phải gọi 1 method bình thường
+    - Khi thấy: Vue.use(MyPlugin)
+        - đừng chỉ nhớ cài Plugin mà phải đọc được:
+            Vue.use(MyPlugin)
+                    ↓
+            Plugin được cài vào Vue
+                    ↓
+            install(Vue, options)
+                    ↓
+            Plugin có thể thay đổi/cấu hình Vue
+        - VD: Vue.use(Router), Vue.use(Vuex),... thì khi đọc project bạn phải biết.
+            - Những thứ này có thể đã đăng ký hoặc gắn thêm thứ gì đó vào Vue.
+        - Lưu ý rằng một dòng Vue.use() có thể đăng ký rất nhiều component toàn cục, nên gặp một thẻ lạ như el-table, v-btn mà không thấy import thì cần kiểm tra Vue.use() trong main.js.
+Phần III. RENDER FUNCTION
+    - Phần này không cần viết thành thạo chỉ cần nhìn thấy:
+        render(h) {
+            return h(...)
+        } là nhận ra đây là render Function của Vue 2
+    - VD: render(h) {
+            return h(
+                'h2',
+                {
+                    class: 'tieu-de',
+                     on: {
+                        click: this.xuLy
+                    }
+                },
+                this.$slots.default
+            )
+        }
+    1. h là gì
+        - là hàm tạo element/component.
+        - VD:
+            h("h2", "Hello Vue") ~ <h2>Hello Vue</h2>
+    2. data phần của h()
+        - Cú pháp: h(tag, data, children)
+            - tag: là thẻ cần tạo.
+            - data: là một biến chứa nhiều loại thông tin để Vue tạo element.
+            - children: là nội dung bên trong.
+    3. Event
+        - Template: 
+            <button @click="xuLy">
+                Click
+            </button>
+        - Render:
+            render(h) {
+                return h(
+                    "button",
+                    {
+                        on: {
+                            click: this.xuLy
+                        }
+                    },
+                    "Click"
+                )     
+            }
+        - vì sao là on?
+            vì trong render function của Vue 2 tường ứng với vai trò @click="..." trong html
+    4. alert
+        render(h) {
+            return h(
+                "button",
+                {
+                    on: {
+                        click: () => {
+                            alert("Đã click")
+                        }
+                    }
+                },
+                "Click me"
+            )
+        }
+        - ĐỌC: render -> h() -> tạo button -> gắn event click -> click -> alert()
+Phần IV. Render Function và Template
+    - Không cần nghĩ rằng render function tốt hơn template.
+    - VD: template:
+        <component :is="'h' + muc">
+            <slot></slot>
+        </component>
+    - Render Function có thể biểu diễn logic tương tự bằng Js.
+Phần V. Children và $slots
+    - đây là phần liên quan trục tiếp đến slot mà đã học ở giai đoạn Components.
+    - Như đã thấy: this.$slots.default
+    - VD: 
+        render(h) {
+            return h(
+                'div',
+                this.$slots.default
+            )
+        }
+    nếu component đc dùng: 
+        <my-box>
+            <p>Hello</p>
+        </my-box>
+        thì this.$slots.default chính là nội dung <p>Hello</p>
+Phần VI. v-if, v-for trong Render Function
+    - Không cần viết thành thạo nhưng nên biết cách đọc.
+        Template:
+            <div v-if="hienThi">
+                Hello
+            </div>
+        Render:
+            render(h) {
+                if (this.hienThi) {
+                    return h('div', 'Hello')
+                }
+            }
+        Tức là: v-if -> JavaScript if
+    - v-for
+        Template:
+            <ul>
+                <li v-for="item in danhSach" :key="item.id">
+                    {{ item.name }}
+                </li>
+            </ul>
+        Render:
+            render(h) {
+                return h(
+                    'ul',
+                    this.danhSach.map(item => {
+                        return h(
+                            'li',
+                            {
+                                key: item.id
+                            },
+                            item.name
+                        )
+                    })
+                )
+            }
+    - Không cần tự gõ thuộc dạng này nhiều.
+        Chỉ cần đọc được:
+            danhSach.map()
+                ↓
+            tạo nhiều h('li')
+        là đủ.
+Phần VII. JSX - chỉ cần nhận diện
+    - Vue 2 có thể gặp:
+        render(h) {
+            return (
+                <button onClick={this.xuLy}>
+                    Click me
+                </button>
+            )
+        } -> chỉ cần biết khi nhìn cái này biết đây là JSX + Render Function
+    với
+        render(h) {
+            return h(
+                'button',
+                {
+                    on: {
+                        click: this.xuLy
+                    }
+                },
+                'Click me'
+            )
+        }
+    - JSX nhìn gần HTML hơn.
+Phần VIII. Transitions - chỉ đọc khi có hiệu hứng chuyển cảnh
+    <transition>
+        <div v-if="show">
+            Hello
+        </div>
+    </transition>
+    hoặc
+        <transition-group>
+            ...
+        </transition-group>
+    thì biết:
+        Vue đang xử lý animation/transition khi element được thêm, xóa hoặc thay đổi
+        
+
