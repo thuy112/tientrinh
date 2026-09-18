@@ -1,0 +1,278 @@
+Giai đoạn 6 — Nâng cao: Reactivity in Depth và bẫy Vue 2
+Ngày 1: Cơ chế Reactivity của Vue 2 + $set
+
+Phần I. Reactivity là gì?
+    - Reactivity = khả năng Vue phát hiện dữ liệu thay đổi và cập nhật giao diện theo dữ liệu đó.
+    - VD: data() {
+            return {
+                ten: 'Thủy'
+            }
+        }
+        Template:
+            <h2>{{ ten }}</h2>
+            <button @click="doiTen">
+                Đổi tên
+            </button>
+        JavaScript
+            methods: {
+                doiTen() {
+                    this.ten = 'Lan'
+                }
+            }
+        ban đầu ten = "Thuỷ" sau khi click this.ten = "Lan" -> Vue phát hiện thay đổi -> Vue cập nhật DOM -> <h2>Lan</h2>
+Phần II. Vue 2 làm reactivity bằng gì?
+    - Vue 2 sử dụng:
+        Object.defineProperty()
+        để tạo getter và setter cho các thuộc tính mà Vue biết ngay từ lúc khởi tạo.
+    - VD: 
+        data() {
+            return {
+                user: {
+                    ten: 'A'
+                }
+            }
+        }
+        Vue sẽ nhìn thấy: user
+                            └── ten
+        -> biến ten thành 1 property có getter/setter.
+Phần III. getter
+    - dùng để ghi nhận dependency. 
+    - VD: TỪ VD PHẦN II  sẽ đơn giản hoá
+        get() {
+            dep.depend()      // GHI NHẬN: ai đang đọc tôi?
+            return giaTri
+        },
+
+Phần IV. setter
+    - dùng để thông báo cho các watcher khi giá trị thay đổi.
+    - VD: lấy từ II đơn giản hoá:
+        set(moi) {
+            giaTri = moi
+            dep.notify()      // BÁO ĐỘNG: mọi người đã đọc tôi, vẽ lại đi
+        }
+Phần V. Dep là gì?
+    - hiểu đơn giản là số theo dõi người đang sử dụng dữ liệu này.
+    - VD: <h2>{{ user.ten }}</h2>
+        Khi render:
+            Template đọc user.ten
+                    ↓
+            Getter chạy
+                    ↓
+            Dep ghi nhận
+                    ↓
+            Render Watcher phụ thuộc vào user.ten
+        Sau này: this.user.ten = 'B'
+            thì:
+            Setter chạy
+                ↓
+            Dep.notify()
+                ↓
+            Thông báo Watcher
+                ↓
+            Render lại
+    - Observer: duyệt object, đặt getter/setter
+    - Dep: lưu danh sách dependency
+    - Watcher: theo dõi thay đổi và phản ứng
+Phần VI. Watcher là gì?
+    - là đối tượng giúp Vue biết: khi dữ liệu tôi đang quan tâm thay đổi thì tôi phải làm gì?
+    - trong trường hợp UI: Render watcher theo dõi những dữ liệu mà template sử dụng.
+    - VD: <h2>{{ user.ten }}</h2>
+            <p>{{ user.email }}</p>
+        Vue render: user.ten, user.email các dependency đc ghi nhận.
+    - Khi this.user.tenn = 'B' setter thông báo: Dep -> Render Watcher -> Render lại
+Phần VII. Toàn bộ quy trình
+    - Giả sử: JS:
+        data() {
+            return {
+                user: {
+                    ten: 'A'
+                }
+            }
+        }
+    HTML: <h2>{{ user.ten }}</h2>
+    - Lúc render bắt đầu:
+        1. Vue render component
+        2. Template đọc user.ten
+        3. Getter của ten chạy
+        4. Dep ghi nhận Render Watcher
+        5. UI hiển thị "A"
+    - Sau đó: this.user.ten = 'B'
+    - Lúc thay đổi:
+        1. Setter của ten chạy
+                ↓
+        2. ten thay đổi thành "B"
+                ↓
+        3. Dep.notify()
+                ↓
+        4. Báo cho Render Watcher
+                ↓
+        5. Vue xếp render vào queue
+                ↓
+        6. UI cập nhật thành "B"
+Phần VIII. Tại sao thêm key mới lại không reactive?
+    - Có: 
+        data() {
+            return {
+                user: {
+                    ten: 'A'
+                }
+            }
+        }
+    - Lúc khởi tạo Vue thấy:
+        user
+        └── ten
+    - Vue tạo getter/setter cho: ten
+    - Nhưng sau đó bạn làm: this.user.tuoi = 30
+    - Vue thấy gì?
+        user
+        ├── ten     ← Vue đã observe
+        └── tuoi    ← thêm SAU
+        tuoi không có getter/setter mà Vue đã tạo từ trước.
+    - Do đó:
+        this.user.tuoi = 30
+                ↓
+        JavaScript vẫn thêm được dữ liệu
+                ↓
+        Nhưng Vue không được thông báo
+                ↓
+        UI không cập nhật
+    - Đây là lý do tài liệu nhấn mạnh: Dữ liệu trong object có thể đúng nhưng cơ chế thông báo lại thiếu.
+Phần IX. Ví dụ thực tế sai
+    data() {
+        return {
+            user: {
+                ten: 'Thủy'
+            }
+        }
+    },
+    methods: {
+        themTuoi() {
+            this.user.tuoi = 22
+        }
+    }
+    Template: 
+        <p>Tên: {{ user.ten }}</p>
+        <p>Tuổi: {{ user.tuoi }}</p>
+        <button @click="themTuoi">
+            Thêm tuổi
+        </button>
+    Click user.tuoi = 22, Console: console.log(this.user)
+    Có thể thấy: 
+        {
+            ten: "Thủy",
+            tuoi: 22
+        }
+    Nhưng UI có thể vẫn không hiện tuổi vì tuoi không có cơ chế reactive được thiết lập lúc khởi tạo.
+Phần X. $set giải quyết vấn đề ntn?
+    - Vue 2 cung cấp: this.$set() để thêm property mới theo cách Vue có thể theo dõi.
+    - Vd: this.$set(this.user, 'tuoi', 22)
+    - Cấu trúc: 
+        this.$set(
+            object,
+            key,
+            value
+        )
+    - Nghĩa là: 
+        this.user
+            ↓
+        thêm key "tuoi"
+            ↓
+        giá trị 22
+            ↓
+        thiết lập reactive
+            ↓
+        notify
+            ↓
+        UI cập nhật
+Phần XI. Khi nào hay dùng $set?
+    - Trường hợp 1: API trả về dữ liệu có Field mới
+        - Vd: 
+            user: {
+                id: 1,
+                ten: 'Thủy'
+            }
+            sau đó muốn thêm: user.avatar = 'abc.jpg'
+            Nếu avatar chưa đc khai báo từ trước: this.$set(this.user, 'avatar', 'abc,jpg')
+    - Trường hợp 2: Form có field động
+        - Vd:
+            this.form = {
+                ten: ''
+            }
+            sau đó server hoặc logic thêm: email, phone, address
+            Có thể cần $set nếu các key chưa tồn tại.
+    - Trường hợp 3: Object động
+        - Vd: this.thongKe = {}
+            sau đó: this.thongKe['apple'] = 10
+                    this.thongKe['banana'] = 20
+            Trong Vue 2, đây là tình huống cần đặc biệt chú ý.
+            Nếu key chưa tồn tại, dùng: this.$set(this.thongKe, 'apple', 10)
+Phần XII. Những cách tốt hơn $set là gì?
+    - Khai báo key ngay từ đầu.
+    - Thay vì:  
+        data() {
+            return {
+                form: {}
+            }
+        }
+    - Nên:
+        data() {
+            return {
+                form: {
+                    ten: '',
+                    email: '',
+                    tuoi: null,
+                    ghiChu: ''
+                }
+            }
+        }
+    - Vì ngay từ lúc Vue khởi tạo đã reactive hết rồi nên khi this.form.tuoi = 22 -> không cần $set
+Phần XIII. Một lỗi rất hay gặp
+    data() {
+        return {
+            form: {}
+        }
+    }
+    this.form.ten = 'Thủy'
+    this.form.email = 'abc@gmail.com'
+    - Khi đọc code Vue 2, phải đánh dấu ghi vẫn vì không phải lúc nào cũng chắc chắn là bug, nên phải ktra đã khai báo reactive từ trước chưa. Nếu chưa thì dùng: this.$set(this.form, 'ten', 'Thuỷ') còn không hãy khai báo reactive trước.
+
+5 câu phải nhớ sau Ngày 1
+① Reactivity là gì?
+Dữ liệu thay đổi → Vue phát hiện → UI cập nhật.
+② Vue 2 dùng gì?
+Object.defineProperty.
+③ Getter làm gì?
+Khi dữ liệu được đọc, getter giúp ghi nhận dependency.
+④ Setter làm gì?
+Khi dữ liệu thay đổi, setter thông báo cho dependency để Vue cập nhật.
+⑤ Vì sao key mới không reactive?
+Vì key đó được thêm sau khi Vue observe object, nên không có getter/setter reactive.
+
+- SƠ ĐỒ NGÀY 1 CẦN NHỚ
+                 VUE 2 REACTIVITY
+
+                 data() khởi tạo
+                       │
+                       ▼
+                  Observer
+                       │
+             Object.defineProperty
+                       │
+              ┌────────┴────────┐
+              ▼                 ▼
+            Getter            Setter
+              │                 │
+              ▼                 ▼
+         Đọc dữ liệu       Đổi dữ liệu
+              │                 │
+              ▼                 ▼
+             Dep            Dep.notify()
+              │                 │
+              ▼                 ▼
+          Watcher  ◄────────────┘
+              │
+              ▼
+          Render lại
+              │
+              ▼
+              UI

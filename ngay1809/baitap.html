@@ -1,0 +1,72 @@
+<!--Bài 6.1:-->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài 6.1 — Thêm key mới vào Object</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+    .box { border: 1px solid #ccc; padding: 15px; border-radius: 8px; max-width: 500px; }
+    button { margin: 5px 5px 5px 0; padding: 8px 12px; cursor: pointer; }
+    .code { background: #f4f4f4; padding: 10px; border-radius: 4px; font-family: monospace; }
+  </style>
+</head>
+<body>
+
+<div id="app61" class="box">
+  <h3>Bài 6.1: Thêm key mới vào Object</h3>
+  
+  <p><strong>Tên:</strong> {{ user.ten }}</p>
+  <p><strong>Tuổi (UI):</strong> {{ user.tuoi !== undefined ? user.tuoi : 'Chưa có' }}</p>
+
+  <hr>
+
+  <button @click="ganThang">1. Gán thẳng (sai)</button>
+  <button @click="epReRender">2. Ép re-render</button>
+  <button @click="dungSet">3. Dùng $set</button>
+  <button @click="resetData">Reset</button>
+
+</div>
+
+<script>
+  var app61 = new Vue({
+    el: '#app61',
+    data() {
+      return {
+        user: {
+          ten: 'Thủy'
+        }
+      };
+    },
+    methods: {
+      ganThang() {
+        // Gán trực tiếp key mới chưa được khai báo lúc khởi tạo
+        this.user.tuoi = 22;
+        console.log('--- Đã gán thẳng user.tuoi = 22 ---');
+        console.log('Data thực tế trong JS:', JSON.parse(JSON.stringify(this.user)));
+      },
+      epReRender() {
+        // Ép Render Watcher chạy lại thủ công
+        this.$forceUpdate();
+        console.log('--- Đã gọi $forceUpdate() ---');
+      },
+      dungSet() {
+        // Dùng $set để vừa gán vừa tạo Getter/Setter reactive
+        this.$set(this.user, 'tuoi', 22);
+        console.log('--- Đã dùng $set(this.user, "tuoi", 22) ---');
+        console.log('Data thực tế trong JS:', JSON.parse(JSON.stringify(this.user)));
+      },
+      resetData() {
+        this.user = { ten: 'Thủy' };
+        this.$forceUpdate();
+        console.clear();
+        console.log('--- Đã Reset Data ---');
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
