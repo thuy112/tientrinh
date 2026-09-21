@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vue 2 - Giai đoạn 6 - Buổi 2</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <style>
+    .container { width: 800px; margin: 30px auto; font-family: Arial, sans-serif; }
+    h1 { text-align: center; }
+    .box { border: 1px solid #ccc; border-radius: 8px; padding: 20px; margin-bottom: 30px; }
+    .buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+    button { padding: 8px 14px; margin: 5px 0; cursor: pointer; }
+    pre { background: #f5f5f5; padding: 15px; }
+    input { display: block; margin-top: 15px; padding: 10px; width: 300px; }
+  </style>
+</head>
+<body>
+
+<div id="app" class="container">
+  <h1>Giai đoạn 6 — Buổi 2</h1>
+  <!--Bài 6.2-->
+  <section class="box">
+    <h2>Bài 6.2 — Reactivity với Array</h2>
+
+    <p><strong>Danh sách hiện tại:</strong></p>
+    <ul>
+      <li v-for="(item, index) in ds" :key="index">
+        {{ index }} - {{ item }}
+      </li>
+    </ul>
+
+    <div class="buttons">
+      <button @click="pushItem">1. push()</button>
+      <button @click="ganIndexSai">2. Gán index - SAI</button>
+      <button @click="ganIndexDung">3. Gán index - $set</button>
+      <button @click="datLengthSai">4. length = 0 - SAI</button>
+      <button @click="mapItem">5. map()</button>
+      <button @click="resetArray">Reset Array</button>
+    </div>
+
+    <hr>
+
+    <h3>Hai trường hợp TODO</h3>
+    <button @click="todoGanIndex">TODO 1 - Sửa index</button>
+    <button @click="todoDatLength">TODO 2 - Xóa mảng</button>
+
+    <p><strong>Kết quả Data:</strong></p>
+    <pre>{{ ds }}</pre>
+  </section>
+
+  <!-- BÀI 6.3 — $NEXTTICK -->
+  <section class="box">
+    <h2>Bài 6.3 — $nextTick</h2>
+
+    <h3>1. Tăng số rồi đọc DOM ngay</h3>
+    <p>
+      Giá trị hiển thị:
+      <span ref="so">{{ so }}</span>
+    </p>
+    <button @click="tangSoDocDom">Tăng số rồi đọc DOM ngay</button>
+
+    <h3>2. Mở & focus - SAI</h3>
+    <button @click="moRoiFocusSai">Mở & focus (sai)</button>
+
+    <h3>3. Mở & focus - ĐÚNG (Viết theo async/await)</h3>
+    <button @click="moRoiFocusDung">Mở & focus ($nextTick)</button>
+
+    <div v-if="hien">
+      <input ref="o" placeholder="Ô input sẽ được focus">
+    </div>
+  </section>
+</div>
+
+<script>
+new Vue({
+  el: '#app',
+  data() {
+    return {
+      // Data Bài 6.2
+      ds: ['A', 'B', 'C'],
+
+      // Data Bài 6.3
+      so: 0,
+      hien: false
+    }
+  },
+  methods: {
+
+    // 1. TOÀN BỘ LOGIC BÀI 6.2 (ARRAY REACTIVITY)
+    pushItem() {
+      //UI đổi: push() là 1 trong 7 mutation methods được Vue patch
+      this.ds.push('D');
+    },
+
+    ganIndexSai() {
+      //UI không đổi: Vue 2 không bắt được thay đổi trực tiếp qua index
+      this.ds[0] = 'X';
+    },
+
+    ganIndexDung() {
+      //UI đổi ngay: Dùng $set để báo cho Vue lắng nghe
+      this.$set(this.ds, 0, 'X');
+    },
+
+    datLengthSai() {
+      //UI không đổi: Vue 2 không bắt được thao tác can thiệp trực tiếp thuộc tính length
+      this.ds.length = 0;
+    },
+
+    mapItem() {
+      //UI đổi: map() tạo mảng mới, phép gán lại làm kích hoạt Setter của `ds`
+      this.ds = this.ds.map(item => item + '!');
+    },
+
+    resetArray() {
+      this.ds = ['A', 'B', 'C'];
+    },
+
+    //TODO 1: Đổi phần tử đầu tiên thành "TODO-X" (Không dùng this.ds[0] = ...)
+    todoGanIndex() {
+      this.$set(this.ds, 0, 'TODO-X');
+    },
+
+    //TODO 2: Xóa toàn bộ danh sách (Không dùng this.ds.length = 0)
+    todoDatLength() {
+      this.ds = [];
+    },
+
+    // 2. TOÀN BỘ LOGIC BÀI 6.3 ($NEXTTICK)
+    tangSoDocDom() {
+      this.so++;
+
+      // Đọc DOM ngay: Trả về giá trị cũ vì Vue chưa kịp re-render
+      console.log('DOM ngay:', this.$refs.so.textContent);
+
+      // Đọc DOM sau $nextTick: Trả về giá trị mới đã cập nhật
+      this.$nextTick(() => {
+        console.log('DOM sau nextTick:', this.$refs.so.textContent);
+      });
+    },
+
+    moRoiFocusSai() {
+      this.hien = true;
+      // Báo lỗi Console vì <input ref="o"> chưa kịp tạo trong DOM ở thời điểm này
+      this.$refs.o.focus();
+    },
+
+    // Viết lại bằng async/await chuẩn bài tập
+    async moRoiFocusDung() {
+      this.hien = true;
+
+      // Đợi cho đến khi Vue re-render xong DOM
+      await this.$nextTick();
+
+      // Lúc này <input> đã xuất hiện, focus an toàn
+      this.$refs.o.focus();
+    }
+  }
+});
+</script>
+
+</body>
+</html>

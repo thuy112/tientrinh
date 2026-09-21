@@ -1,0 +1,225 @@
+Giai đoạn 6 — Nâng cao: Reactivity in Depth và bẫy Vue 2
+    GIAI ĐOẠN 6 — BUỔI 2: Array Reactivity + $nextTick()
+
+Phần I. ARRAY REACTIVITY TRONG VUE 2
+    1. Bẫy đầu tiên: thay đổi phàn tử bằng index
+        - Giả sử:
+            data() {
+                return {
+                    sanPhams: ['Laptop', 'Chuột', 'Bàn phím']
+                }
+            }
+        - Trên giao diện:
+            <div v-for="item in sanPhams" :key="item">
+                {{ item }}
+            </div>
+        - bây giờ muốn đổi Laptop -> Macbook
+        - Cách js thông thường: this.sanPhams[0] = 'Macbook' js có thể thay đổi dữ liệu. Nhưng trong Vue 2 không được Vue 2 đảm bảo reactive.
+        -> Đây là 1 trong những Array caveat của Vue 2.
+    2. Tại sao lại như vậy
+        - Ở buổi 1 đã biết Vue 2 sử dụng: Object.defineProperty để theo dõi dữ liệu.
+        - Nhưng với Array, Vue 2 không thể bắt trực tiếp kiểu: array[0] = value theo cách cần thiết để tự động thông báo thay đổi.
+        -> this.sanPham[0] = 'Macbook' có thể làm DATA thay đổi nhưng Vue không nhận được thông báo -> ui không cập nhật.
+    3. Cách đúng số 1: $set()
+        - Vue 2 cung cấp $set() cho trường hợp này.
+            this.$set(this.sanPhams, 0, 'Macbook')
+        - Công thức: this.$set(array, index, value)
+        - VD: this.$set(this.sanPhams, 0, 'Macbook') -> Laptop -> Macbook và UI được cập nhật.
+    4. Cách đúng số 2: splice()
+        - Ta có thể viết: this.sanPhams.splice(0, 1, 'Macbook')
+        - Ý nghĩa: splice(vị trí, số lượng xoá, phần tử mới)
+        - vậy cấu trên nghĩa là vị trí 0, xoá 1 phần tử và thêm 'Macbook'.
+        -> Vue 2 nhận biết được thay đổi.
+    5. Vậy nhớ thế nào?
+        - Khia muốn sửa: this.sanPhams[0] = 'Macbook' thì đừng làm như vậy trong Vue 2.
+        - Thay bằng: this.$set(this.sanPhams, 0, 'Macbook') hoặc this.sanPham.splice(0, 1, 'Macbook')
+        -> Công thức cần nhớ: Vue 2 + array index  -> $set() hoặc splice().
+Phần II. Tại sao push() lại hoạt động?
+    - VD: this.sanPhams.push('Tai nghe')
+    - Kết quả: [
+                    'Laptop',
+                    'Chuột',
+                    'Bàn phím',
+                    'Tai nghe'
+                ] UI cập nhật bình thường.
+    -> tại sao: Vue 2 đã patch 1 phương thức thay đổi Array để chúng có thể thông báo cho hệ thống Reactivity.
+    - có 7 phương thức: push(), pop(), shift(), unshift(), splice(), sort(), reverse().
+    1. Hiểu bản chất
+        - VD: this.sanPhams.push('Tai nghe') không đơn giản chỉ là array thay đổi mà Vue 2 đã can thiệp vào các method này sau khi mutation xảy ra, Vue có thể thông báo:
+            Array thay đổi -> notify -> watcher -> render -> UI cập nhật
+            - Đây là lí do: push() hoạt động reactive nhưng array[0] = ... lại là 1 caveat.
+Phần III. length = 0
+    - Giả sử:
+        sanPhams: [
+            'Laptop',
+            'Chuột',
+            'Bàn phím'
+        ] Em muốn xoá hết. Có thể nghĩ: this.sanPhams.length = 0
+        js sẽ cho [] nhưng Vue 2 không đc xem là cách reactive.
+    - Cách 1: this.sanPhams = []: vì đang gán 1 array mới cho property sanPhams.
+    - Cách 2: this.sanPhams.splice(0): splice()là 1 trong những array methods đc Vue 2 patch.
+Phần IV. filter() và map() có reactive không?
+    - VD: 
+        this.sanPhams = this.sanPhams.filter(item => {
+            return item !== 'Chuột'
+        }) Có reactive không? có nhưng không phải vì Vue patch filter(). Sau đó: this.sanPhams = arrayMoi : đây là phép gán lại property sanPhams, nên Vue nhận biết được thay đổi.
+    - js ban đầu có: 
+        [
+            'Laptop',
+            'Chuột',
+            'Bàn phím'
+        ] khi chạy vd trên ra [
+                                'Laptop',
+                                'Bàn phím'
+                            ] UI cập nhật
+    - map() cũng tương tự
+        this.sanPhams = this.sanPhams.map(item => {
+            return item.toUpperCase()
+        })
+    - kết quả: [
+                    'LAPTOP',
+                    'CHUỘT',
+                    'BÀN PHÍM'
+                ] reactive vì em gán Array mới.
+Phần V. $nextTick() 
+    - Bây giờ tạm gác lại Array.
+    - Đã hiểu data thay đổi -> Vue cập nhật UI.
+    - Vue không nhất thiết cập nhật DOM ngay tại dòng code thay đổi data.
+    - VD:
+        this.showInput = true
+        console.log(this.$refs.input)
+        - có thể mong <input> đã tồn tại. Nhưng chưa chắc.
+    1. Ví dụ dễ hiểu nhất.
+        - HTML
+            <input
+                v-if="showInput"
+                ref="input"
+            />
+        - Data:
+            data() {
+                return {
+                    showInput: false
+                }
+            }
+        - Ban đầu: showInput = false -> input chưa tồn tại trong DOM.
+        - Sau đó: this.showInput = true Vue nhận thấy data thay đổi.
+        - Nhưng quá trình:
+            data thay đổi
+                ↓
+            Vue xử lý
+                ↓
+            render
+                ↓
+            DOM thay đổi
+        không nhất thiết hoạn thành ngay tạo dòng this.showInput = true. Vue có cơ chế batch updata để gom các thay đổi rồi cập nhật DOM.
+    2. Vì vậy $refs có thể chưa tồn tại
+        - Nếu viết: 
+            this.showInput = true
+            this.$refs.input.focus()
+        có thể gặp: 
+            this.$refs.input
+                ↓
+            undefined
+        vì <input> chưa được tạo DOM.
+    3. Dùng $nextTick()
+        - viết:
+            this.showInput = true
+            this.$nextTick(() => {
+                this.$refs.input.focus()
+            })
+        - Hiểu đơn giản:
+            Thay đổi data
+                ↓
+            Vue cập nhật
+                ↓
+            DOM cập nhật xong
+                ↓
+            $nextTick chạy
+                ↓
+            focus input
+        - Đây là mục tiêu chính của $nextTick().
+    4. VD thực tế
+        - Giả sử HTML:
+            <button @click="moForm">
+                Thêm sản phẩm
+            </button>
+            <input
+                v-if="showInput"
+                ref="input"
+                placeholder="Nhập tên sản phẩm"
+            />
+        - JS:
+            data() {
+                return {
+                    showInput: false
+                }
+            },
+            methods: {
+                moForm() {
+                   this.showInput = true
+
+                    this.$nextTick(() => {
+                        this.$refs.input.focus()
+                    })
+                }
+            }
+        - Khi click -> showInput = true -> Vue tạo <input> ->DOM cập nhật -> $nextTick() -> input.focus()
+Phần VI. $set và $nextTick khác nhau hoàn toàn
+    1. $set
+        - giải quyết: Vue chưa theo dõi được DATA.
+        - VD: this.$set(this.user, 'tuoi', 20)
+    2. $nextTick
+        - Giải quyết: Vue đã biết DATA thay đổi nhưng DOM chưa cập nhật xong.
+        - VD: this.showInput = true
+
+            this.$nextTick(() => {
+                this.$refs.input.focus()
+            })
+    3. Nhớ 1 câu:
+        $set -> DATA
+        $nextTick -> DOM
+Phần VII. $nextTick() hay dùng ở đâu?
+    - Có 3 trường hợp đáng nhớ:
+    1. v-if vừa tạo element
+        this.showInput = true
+
+        this.$nextTick(() => {
+            this.$refs.input.focus()
+        })
+    2. Đo kích thước DOM sau khi thay đổi
+        this.showList = true
+
+        this.$nextTick(() => {
+            console.log(this.$refs.list.offsetHeight)
+        })
+    3. Làm việc với thư viện bên ngoài.
+        - Sau khi Vue tạo DOM xong mới khởi tạo:
+            Chart, Table, Map,...
+Phần VIII. Một lưu ý quan trọng
+    - Không phải cứ code Vue là phải dùng $nextTick()
+        - không cần:
+            this.name = 'Thủy'
+            this.$nextTick(() => {
+                console.log(this.name)
+            })
+        - Nếu em chỉ cần đọc data, không cần chờ DOM. Chỉ dùng $nextTick() khi em cần làm việc với DOM  sau khi Vue cập nhật.
+Phần IX. TỔNG KẾT BUỔI 2
+    ARRAY VUE 2
+        arr[index] = value → ❌
+        $set(arr, index, value) → ✅
+        splice() → ✅
+        push() → ✅
+        pop() → ✅
+        shift() → ✅
+        unshift() → ✅
+        sort() → ✅
+        reverse() → ✅
+        arr.length = 0 → ❌
+        arr = [] → ✅
+        arr = arr.filter(...) → ✅
+        arr = arr.map(...) → ✅
+    và:
+        $set() -> xủ lý DATA chưa reactive
+        $nextTick() -> chở DOM cập nhật xong
+        
+    
