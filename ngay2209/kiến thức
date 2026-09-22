@@ -1,0 +1,310 @@
+GIAI ĐOẠN 6 — BUỔI 3
+    Các bẫy thực tế trong Vue 2
+    Hôm nay có 5 phần chính:
+        Object.freeze()
+        Không đưa object bên thứ ba vào data()
+        Vue 2.7 Composition API
+        Bảo mật: v-html, href và XSS
+        Phân biệt Vue 2 và Vue 3 khi đọc code
+I. Object.freeze()
+    - dùng để đóng băng 1 object
+    - Vd: 
+        const sanPham = {
+            ten: 'Laptop',
+            gia: 15000000
+        }       
+        Object.freeze(sanPham)
+    - sau khi freeze
+        sanPham.ten = 'MacBook'
+    sẽ không thay đổi được object.
+    - Tại sao Vue lại có Object.freeze()
+        giải sử bạn có 1 danh sách dữ liệu rất lớn:
+            data() {
+                return {
+                    danhSach: [
+                        // hàng nghìn sản phẩm
+                    ]
+                }
+            }
+        Nếu dữ liệu này chỉ đề hiển thị, không cần thay đổi, thì việc Vue theo dõi toàn bộ object có thể là không cần thiết.
+    - Khi đó có thể:
+        data() {
+            const danhSach = Object.freeze([
+                { ten: 'Laptop', gia: 15000000 },
+                { ten: 'Chuột', gia: 300000 }
+            ])
+
+            return {
+                danhSach
+            }
+        }
+    - Ý tưởng: 
+        Dữ liệu lớn -> không cần sửa -> Object.freeze() -> Vue không cần theo dõi thay dõi thay đổi của object đó.
+II. Không đưa object bên thứ ba vào data()
+    - Đây là phần thực tế khi đi làm.
+    - VD: BẠN SỬ DỤNG THƯ VIỆN BIỂU ĐỒ:
+        const chart = new Chart(...)
+    hoặc: const socket = new WebSocket(...)
+    hoặc: const timer = setInterval(...)
+    Không nên làm kiểu:
+        data() {
+            return {
+                chart: null,
+                socket: null,
+                timer: null
+            }
+        }
+    rồi:
+        mounted() {
+            this.chart = new Chart(...)
+        }
+    - Vì sao: Vì Vue 2 có cơ chế quan sát object bằng: Object.defineProperty
+    - Vue có thể cố gắng observe những object bạn đưa vào data().
+    - Trong khi đó các object như:
+        Chart.js instance
+        WebSocket
+        timer
+        một số object của thư viện bên thứ ba
+    không phải dữ liệu giao diện cần Vue theo dõi 
+    - Cách an toàn hơn:
+        - VD: 
+            data() {
+                return {
+                    ten: 'Biểu đồ doanh thu'
+                }
+            },
+
+            mounted() {
+                this.chart = new Chart(...)
+            }
+        ở đây: ten là dữ liệu UI
+        còn: this.chart là object phục vụ kỹ thuật
+    - Nhớ: Data dùng cho UI -> data(). Instance kỹ thuật của thư viện -> không nhất thiết đưa vào data()
+III. Vue 2.7 có Composition API không
+    - Có. Đây là chỗ dễ nhầm
+    - code: 
+        import {
+            ref,
+            computed,
+            onMounted
+        } from 'vue'
+        và nghĩ đây là Vue 3. (Không nhất thiết và Vue 2.7 cũng hỗ trợ Composition API)
+    - VD: 
+        import {
+            ref,
+            computed
+        } from 'vue'
+        có thể sử dụng: const count = ref(0)
+    - Nhưng điều quan trọng là: Vue 2.7 vẫn mang những đặc điểm reactivity của Vue 2.
+    - Tức là việc sử dụng ref() không biến project thành Vue 3.
+IV. Bảo mật - {{...}} và v-html
+    - Giả sử người dùng nhập: <h1> Xin chào </h1>
+    - Bạn hiển thị: <p>{{ noiDung }}</p>
+    Vue sec escape HTML. Kết quả không phải là 1 thẻ <h1> thực sự.
+    - Nếu dùng: 
+        <div v-html="noiDung"></div>
+        Vue sẽ render HTML thật.
+    - VD: 
+        noiDung: '<h1>Xin chào</h1>' thì <div v-html="noiDung"></div>
+        sẽ tạo: 
+            <div>
+                <h1>Xin chào</h1>
+            </div>
+V. Tại sao v-html nguy hiểm?
+    - Nếu dữ liệu đến từ người dùng thì có thể chứ HTML độc hại.
+    - VD về mặt nguyên tắc:
+        <img src="x" onerror="...">
+        Nếu lấy dữ liệu người dùng rồi đưa thẳng vào:
+            <div v-html="noiDung"></div>
+        thì có nguy cơ XSS = Cross-Site Scripting
+    - Quy tắc cần nhớ:
+        Bình thường: {{ noidung }} -> Vue escape nội dung.
+        Không an toàn nếu dữ liệu chưa được kiểm soát: 
+            <div v-html="noiDung"></div> -> HTML được render trực tiếp.
+    -> Vì vậy: không dùng v-html trực tiếp với nội dung do người dùng cung cấp.
+    - Nếu bắt buộc phải render HTML từ bên ngoài thì cần xử lý/sanitize dữ liệu trước. Tài liệu cũng đề cập hướng dùng sanitizer như DOMPurify và khuyến nghị ưu tiên xử lý ở backend.
+VI. Không chỉ v-html mới cần chú ý
+    - VD: 
+        <a :href="url">
+            Link
+        </a>
+        Nếu: url = userInput
+        thì không nên mặc định tin tưởng giá trị đó.
+    - Cần kiểm tra scheme/định dạng URL trước khi đưa vào những thuộc tính nhạy cảm
+VII. Phân biệt Vue 2 và Vue 3
+    Vue 2	                                        Vue 3
+    new Vue()	                                    createApp()
+    Object.defineProperty	                        Proxy
+    $set()	                                        Không cần kiểu $set này
+    $delete()	                                    Không cần kiểu $delete này
+    .sync	                                        v-model argument
+    Filters	                                        Không còn filters
+    $on/$off Event Bus	                            Không còn API này
+    Single root	                                    Có Fragment
+    beforeDestroy	                                beforeUnmount
+    destroyed	                                    unmounted
+    Vuex 3	                                        Pinia / Vuex tùy project
+    Vue Router 3	                                Vue Router 4
+    new VueRouter()	                                createRouter()
+    @click.native	                                Không dùng .native
+    Mixins	                                        Composition API / composables thường được ưu tiên
+- Sau buổi hôm nay
+    - Nếu bạn hiểu được câu này thì coi như đã nắm được trọng tâm Giai đoạn 6:
+        - Vue 2 không chỉ có chuyện “data thay đổi → UI thay đổi”. Quan trọng là phải biết Vue 2 theo dõi được thay đổi nào, DOM được cập nhật khi nào, dữ liệu nào không nên để Vue observe, và những cách render dữ liệu nào có rủi ro bảo mật.
+
+TÌM HIỂU VỀ Nuxt.js 2
+    Phần 1: Nền tảng & cấu trúc dự án Nuxt 2
+        1. Nuxt.js 2 giải quyết vấn đề gì?
+            - Một ứng dụng Vue 2 chuẩn (SPA-Single Page Application) gặp 2 hạn chế lớn:
+                - SEO kém: Server trả về file index.html gần như trống (<div id="app"></div>). Google Bot hoặc Facebook Crawler quét vào không thấy nội dung.
+                - First Countentful Paint(FCP) chậm: Browsẻ phải tải toàn bộ Bundle JS về, thi hành JS rồi mới render ra giao diện.
+            - Nuxt 2 giải quyết bằng cơ chế SSR (Server-Side Rendering): Node.js server chạy code Vue trước, biên dịch thành chuỗi HTML hoàn chỉnh chứa đầy đủ dữ liệu rồi mới gửi về Browser.
+        2. Cấu trúc thư mục chuẩn
+            - Nuxt áp dụng nguyên tắc Convention over Configuration (Quy ước cấu hình).
+            - Mỗi thư mục có 1 nhiệm vụ bắt buộc:
+                nuxt2-project/
+                ├── assets/          # File cần Webpack biên dịch (SASS, LESS, Stylus, Unprocessed Images)
+                ├── static/          # File tĩnh giữ nguyên gốc (favicon.ico, robots.txt) - truy cập qua /filename
+                ├── components/      # Vue Components tái sử dụng (Header, Footer, Card...)
+                ├── layouts/         # Khung giao diện dùng chung (default.vue, error.vue, admin.vue)
+                ├── pages/           # Tự động sinh ra Vue Router (BẮT BUỘC)
+                ├── store/           # Tự động khởi tạo Vuex Modules (BẮT BUỘC)
+                ├── middleware/      # Các hàm chạy trước khi render Page/Layout (Auth check, Permission)
+                ├── plugins/         # Khởi tạo thư viện JS thứ 3 trước khi mount App (Element-UI, Axios, Vuelidate)
+                └── nuxt.config.js   # File cấu hình trung tâm của dự án Nuxt.
+    Phần 2: Routing & Layout( Tự động hoá hoàn toàn)
+        - Trong Vue 2, bạn phải viết cấu hình routes thủ công. Trong Nuxt 2, hệ thống tự route dựa trên cấu trúc file trong thư mục pages/.
+        1. Cơ chế Roulting tự động
+            Basic Routes
+                pages/index.vue -> /
+                pages/about.vue -> /about
+                aboutpages/products/index.vue -> /products
+            Dynamic Routes (Dùng dấu gạch dưới _)
+                Để tạo URL động như /products/:id, bạn tạo tên file hoặc thư mục bắt đầu bằng _:
+                    pages/products/_id.vue -> Route /products/:id (Lấy params qua this.$route.params.id)
+                    pages/users/_category/_id.vue -> Route /users/:category/:id
+            Nested Routes (Route lồng nhau)
+                Để làm giao diện lồng nhau (Parent/Child view), bạn tạo một file .vue và một thư mục cùng tên:
+                    pages/parent.vue (Chứa thẻ <nuxt-child /> bên trong)
+                    pages/parent/child.vue -> Route /parent/child
+        2. Layout System (layouts/)
+            - Layout định nghĩa khung cố định cho các trang (vd: Navbar + Sidebar + Footer)
+            1. Default Layout(layouts/default.vue): Áp dụng cho toàn bộ các trang nếu không khai báo gì thêm.
+                <template>
+                    <div>
+                        <AppHeader />
+                            <!-- Thẻ <nuxt /> đóng vai trò như <router-view> trong Vue 2 -->
+                        <nuxt /> 
+                        <AppFooter />
+                    </div>
+                </template>
+            2. Custom Layout(layouts/blog.vue): Tạo khung riêng cho blog.
+            - Trang pages/blog.vue muốn sử dụng layout này chỉ cần khai báo:
+                export default {
+                    layout: 'blog'
+                }
+            3. Error Page(layouts/error.vue): layout đặc biệt tự động hiển thị kho có lỗi 404 hoặc 500.
+    Phần 3: DATA Fetching & vòng đời SSR
+        1. Vòng đời(Lifecycle) chạy ở đâu?
+            - khi người dùng vào trang Nuxt 2 lần đầu tiên(SSR):
+                [ Incoming Request ]
+                        │
+                        ▼
+                nuxtServerInit (Vuex)
+                        │
+                        ▼
+                Middleware
+                        │
+                        ▼
+                asyncData / fetch
+                        │
+                        ▼
+                beforeCreate()  ──► [ Chạy ở CẢ Server & Client ]
+                  created()     ──► [ Chạy ở CẢ Server & Client ]
+                        │
+                (HTML Rendered on Server & Sent to Browser)
+                        │
+                beforeMount()  ──► [ Chỉ chạy ở Client ]
+                  mounted()    ──► [ Chỉ chạy ở Client ]
+            - Bẫy nghiêm trọng: tuyệt đối không dùng window, document, localStorage trong created() hoặc asyncData(). Nếu dùng, Node.js Server sẽ crash lập tức vì môi trường Server không có các đối tượng này.
+        2. Phân biệt asyncData vs fetch
+            - Nuxt 2 cung cấp 2 phương thức đặc biệt để lấy dữ liệu trước khi render:
+            Tiêu chí                        asyncData                                                           fetch (Phiên bản Nuxt 2.12+)
+            Mục đích            Lấy dữ liệu gộp thẳng vào data của Component                    Lấy dữ liệu và push vào Vuex Store hoặc gán vào local data
+            Phạm vi sử dụng     Chỉ dùng được ở Page components (trong pages/)                  Dùng được ở mọi Component (cả pages/ lẫn components/)
+            Truy cập            thisKHÔNG (Chạy trước khi Component khởi tạo).                  Phải dùng contextCÓ (Chạy sau khi Component đã khởi tạo instance)
+            Thao tác            Trả về 1 Object để merge vào data()                             Sử dụng this.$fetch() để gọi lại khi cần
+            - VD: asyncData: 
+                export default {
+                    // context chứa: params, query, store, $axios, redirect, error...
+                    async asyncData({ $axios, params }) {
+                        const product = await $axios.$get(`https://api.example.com/products/${params.id}`)
+                        return { product } // Trộn trực tiếp vào this.product
+                    }
+                }
+            fetch:
+                export default {
+                    data() {
+                        return {
+                            posts: []
+                        }
+                    },
+                    async fetch() {
+                        this.posts = await this.$axios.$get('https://api.example.com/posts')
+                    }
+                }
+    Phần 4: Vuex, Plugins & Middleware
+        1. Vuex trong Nuxt 2(store/)
+            - Nuxt 2 tự động bật Vuex nếu bạn tạo file trong thư mục store/. Khuên dùng Modules Mode:
+            - Tạo file store/cart.js
+                export const state = () => ({
+                    items: []
+                })
+
+                export const mutations = {
+                    ADD_ITEM(state, item) {
+                        state.items.push(item)
+                    }
+                }
+
+                export const actions = {
+                    addToCart({ commit }, item) {
+                        commit('ADD_ITEM', item)
+                    }
+                }
+            - Nuxt 2 sẽ tự động đăng ký module này. ở component bạn truy cập qua: this.$store.state.cart.items
+            - Action đặc biệt: nuxtServerInit
+                Hàm duy nhất chạy ở Server đầu tiên khi có request, dùng để khởi tạo dữ liệu toàn cục(vd: lấy thông tin User từ Cookie):
+                    // store/index.js
+                    export const actions = {
+                        async nuxtServerInit({ commit }, { req, $axios }) {
+                            if (req.headers.cookie) {
+                                // Lấy thông tin user đăng nhập gán vào Vuex
+                            }
+                        }
+                    }
+        2. Middleware(middleware/)
+            - là các hàm chạy trước khi render Page hoặc Layout.
+            - vd: tạo middlewaer/auth.js để chặn người dùng chưa đăng nhập:
+                export default function ({ store, redirect }) {
+                    // Nếu chưa đăng nhập trong Vuex -> đá về trang login
+                    if (!store.state.auth.isLoggedIn) {
+                        return redirect('/login')
+                    }
+                }
+                sd ở Page: export default {
+                            middleware: 'auth'
+                        }
+        3. Plugins(plugins/)
+        - dùng để đăng ký các thư viện JS, Vue Plugins thứ 3 hoăch thêm các hàm tiện ích toàn cục.
+        - vd: đăng ký element-ui(file plugins/element-ui.js):
+            import Vue from 'vue'
+            import ElementUI from 'element-ui'
+
+            Vue.use(ElementUI)
+            Khai báo trong nuxt.config.js:
+                export default {
+                    plugins: [
+                        { src: '~/plugins/element-ui.js', ssr: true } // ssr: false nếu plugin chỉ chạy ở browser
+                    ]
+                }
